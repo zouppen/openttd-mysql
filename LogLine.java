@@ -1,11 +1,11 @@
+import java.util.Date;
 import java.util.regex.*;
-import java.text.ParseException;
 
 public class LogLine {
 
 	private static final String logEntryRegEx = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+) \"([^\"]+)\" \"([^\"]+)\"";
 	private static final int logEntryGroups = 9;
-	private static final Pattern logEntryPattern = Pattern.compile(logEntryPattern);
+	private static final Pattern logEntryPattern;
 	
 	public String ip;
 	public Date date;
@@ -15,11 +15,15 @@ public class LogLine {
 	public String referer;
 	public String browser;
 
-	public LogLine(String line) throws ParseException {
+	static {
+		logEntryPattern = Pattern.compile(logEntryRegEx);
+	}
+
+	public LogLine(String line) throws Exception {
  
 		Matcher matcher = logEntryPattern.matcher(line);
 		if (!matcher.matches() || logEntryGroups != matcher.groupCount()) {
-			throw ParseException("syntax error.");
+			throw new Exception("syntax error.");
 		}
 
 		this.ip = matcher.group(1);
