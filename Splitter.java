@@ -18,6 +18,8 @@ public class Splitter {
 				
 			} catch (NoSuchElementException foo) {
 				// Tiedosto kaiketi loppu, kaikki ok.
+			} finally {
+				scanner.close();
 			}
 		}
 	}
