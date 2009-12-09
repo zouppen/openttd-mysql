@@ -7,7 +7,7 @@ import java.text.ParsePosition;
 
 public class LogLine {
 
-    private static final String logEntryRegEx = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+) \"([^\"]+)\" \"([^\"]+)\"";
+    private static final String logEntryRegEx = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+|-) \"([^\"]*)\" \"([^\"]+)\"";
     private static final int logEntryGroups = 9;
     private static final Pattern logEntryPattern;
 
@@ -18,7 +18,7 @@ public class LogLine {
     public Date date;
     public String request;
     public String response;
-    public int bytes;
+    public Integer bytes;
     public String referer;
     public String browser;
 
@@ -44,7 +44,8 @@ public class LogLine {
 	    throw new Exception("syntax error in date format.");
 	this.request = matcher.group(5);
 	this.response = matcher.group(6);
-	this.bytes = Integer.parseInt(matcher.group(7));
+	if (!"-".equals(matcher.group(7))) // else null
+	    this.bytes = new Integer(matcher.group(7));
 	if (!matcher.group(8).equals("-"))
 	    this.referer = matcher.group(8);
 	this.browser = matcher.group(9);
