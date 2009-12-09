@@ -17,7 +17,7 @@ public class LogLine {
     public String ip;
     public Date date;
     public String request;
-    public String response;
+    public Integer response;
     public Integer bytes;
     public String referer;
     public String browser;
@@ -43,7 +43,7 @@ public class LogLine {
 	if (position.getErrorIndex() != -1)
 	    throw new Exception("syntax error in date format.");
 	this.request = matcher.group(5);
-	this.response = matcher.group(6);
+	this.response = new Integer(matcher.group(6));
 	if (!"-".equals(matcher.group(7))) // else null
 	    this.bytes = new Integer(matcher.group(7));
 	if (!matcher.group(8).equals("-"))
