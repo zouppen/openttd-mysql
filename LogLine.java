@@ -46,6 +46,8 @@ public class LogLine {
 	this.response = new Integer(matcher.group(6));
 	if (!"-".equals(matcher.group(7))) // else null
 	    this.bytes = new Integer(matcher.group(7));
+	else
+	    this.bytes = new Integer(0);
 	if (!matcher.group(8).equals("-"))
 	    this.referer = matcher.group(8);
 	this.browser = matcher.group(9);
