@@ -7,6 +7,8 @@ import java.sql.*;
  * Apache-login parsija
  */
 public class Splitter {
+
+    private static final String start = "INSERT weblog (ip,date,request,response,bytes,referer,browser) values ";
     
     public static void main(String args[]) throws Exception {
 	
@@ -14,10 +16,8 @@ public class Splitter {
 	    DriverManager.getConnection("jdbc:mysql://130.234.169.15/ixonos?" +
 					"user=joell&password=hohfah3I");
 
-	Statement stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-					      ResultSet.CONCUR_UPDATABLE);
-
-	ResultSet res = getEmptyResult(stmt);
+	Statement stmt = conn.createStatement();
+	SQLBuilder sqlstr = new SQLBuilder();
 
 	for (String filename: args) {
 	    Scanner scanner = new Scanner(new File(filename), "UTF-8");
@@ -29,34 +29,35 @@ public class Splitter {
 		    line = scanner.nextLine();
 		    LogLine entry = new LogLine(line);
 
-		    // Quite nice insertion
-		    res.updateString("ip", entry.ip);
-		    res.updateTimestamp("date", new Timestamp(entry.date.getTime()));
-		    res.updateString("request", entry.request);
-		    res.updateInt("response", entry.response);
-		    res.updateInt("bytes", entry.bytes);
-		    res.updateString("referer", entry.referer);
-		    res.updateString("browser", entry.browser);
-		    res.insertRow();
+		    entry.appendSQL(sqlstr);
+		    sqlstr.append(',');
 
-		    //System.out.println(entry.engineerDebug());
-		    linenum++;
-
-		    if ((linenum % 50) == 0) {
-			res.close();
-			res = getEmptyResult(stmt);
+		    if ((linenum % 2) == 0) {
+			sendSQL(sqlstr);
 		    }
+		    
+		    linenum++;
 		}
 	    } catch (NoSuchElementException foo) {
 		// Tiedosto kaiketi loppu, kaikki ok.
 	    } catch (Exception e) {
-		System.err.println("Stopped to line "+linenum);
+		System.err.println("Error at: "+filename+":"+linenum);
 		System.err.println("Content: "+line);
 		throw e;
 	    } finally {
 		scanner.close();
+
+		sendSQL(sqlstr);
 	    }
 	}
+    }
+
+    private static void sendSQL(SQLBuilder sqlstr) {
+	sqlstr.deleteLast();
+	sqlstr.append(';');
+	System.out.println(sqlstr);
+	sqlstr.empty();
+	sqlstr.append(start);
     }
 
     private static ResultSet getEmptyResult(Statement stmt)

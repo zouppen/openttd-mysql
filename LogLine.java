@@ -4,6 +4,7 @@ import java.util.regex.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
+import java.lang.StringBuilder;
 
 public class LogLine {
 
@@ -46,11 +47,28 @@ public class LogLine {
 	this.response = new Integer(matcher.group(6));
 	if (!"-".equals(matcher.group(7))) // else null
 	    this.bytes = new Integer(matcher.group(7));
-	else
-	    this.bytes = new Integer(0);
 	if (!matcher.group(8).equals("-"))
 	    this.referer = matcher.group(8);
 	this.browser = matcher.group(9);
+    }
+
+    public void appendSQL(SQLBuilder sb) {
+	
+	sb.append('(');
+	sb.appendString(ip);
+	sb.append(',');
+	sb.appendDate(date);
+	sb.append(',');
+	sb.appendString(request);
+	sb.append(',');
+	sb.appendInteger(response);
+	sb.append(',');
+	sb.appendInteger(bytes);
+	sb.append(',');
+	sb.appendString(referer);
+	sb.append(',');
+	sb.appendString(browser);
+	sb.append(')');
     }
 
     public String engineerDebug() {
@@ -58,4 +76,5 @@ public class LogLine {
 	    "\nDate: " + outputFormat.format(this.date) +
 	    "\nBrowser: " + this.browser;
     }
+
 }
