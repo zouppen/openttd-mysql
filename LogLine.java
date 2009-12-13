@@ -15,6 +15,8 @@ public class LogLine {
     private static final DateFormat apacheFormat;
     private static final DateFormat outputFormat;
 	
+    public String server;
+    public String service;
     public String ip;
     public Date date;
     public String request;
@@ -30,8 +32,11 @@ public class LogLine {
 	outputFormat = DateFormat.getInstance();
     }
 
-    public LogLine(String line) throws Exception {
+    public LogLine(String server, String service,String line) throws Exception {
  
+	this.server = server;
+	this.service = service;
+
 	ParsePosition position = new ParsePosition(0);
 
 	Matcher matcher = logEntryPattern.matcher(line);
@@ -55,6 +60,10 @@ public class LogLine {
     public void appendSQL(SQLBuilder sb) {
 	
 	sb.append('(');
+	sb.appendString(server);
+	sb.append(',');
+	sb.appendString(service);
+	sb.append(',');
 	sb.appendString(ip);
 	sb.append(',');
 	sb.appendDate(date);

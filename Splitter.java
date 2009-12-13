@@ -3,13 +3,17 @@ import java.util.Scanner;
 import java.util.NoSuchElementException;
 import java.sql.*;
 import java.util.zip.GZIPInputStream;
+import java.util.regex.*;
 
 /**
  * Apache-login parsija
  */
 public class Splitter {
 
-    private static final String start = "INSERT weblog (ip,date,request,response,bytes,referer,browser) values ";
+    private static final String start = "INSERT weblog (server,service,ip,date,request,response,bytes,referer,browser) values ";
+
+    private static final String filenameRegex =
+	"^(.*)/(.*)\\.\\d{4}-\\d{2}-\\d{2}\\.gz";
     
     public static void main(String args[]) throws Exception {
 	
@@ -19,8 +23,18 @@ public class Splitter {
 
 	Statement stmt = conn.createStatement();
 	SQLBuilder sqlstr = new SQLBuilder(start);
+	Pattern filenamePattern = Pattern.compile(filenameRegex);
 
 	for (String filename: args) {
+
+	    Matcher matcher = filenamePattern.matcher(filename);
+	    if (!matcher.matches() || matcher.groupCount() != 2) {
+		throw new Exception("Filename pattern is not clear. Must be hostname/service.year-month-day.gz");
+	    }
+	    
+	    String server = matcher.group(1);
+	    String service = matcher.group(2);
+
 	    InputStream in =new GZIPInputStream(new FileInputStream(filename));
 	    Scanner scanner = new Scanner(in, "UTF-8");
 	    int linenum = 1;
@@ -29,7 +43,7 @@ public class Splitter {
 	    try {
 		while (true) {
 		    line = scanner.nextLine();
-		    LogLine entry = new LogLine(line);
+		    LogLine entry = new LogLine(server,service,line);
 
 		    sqlstr.addElement(entry);
 
