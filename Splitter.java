@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.NoSuchElementException;
 import java.sql.*;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Apache-login parsija
@@ -20,7 +21,8 @@ public class Splitter {
 	SQLBuilder sqlstr = new SQLBuilder(start);
 
 	for (String filename: args) {
-	    Scanner scanner = new Scanner(new File(filename), "UTF-8");
+	    InputStream in =new GZIPInputStream(new FileInputStream(filename));
+	    Scanner scanner = new Scanner(in, "UTF-8");
 	    int linenum = 1;
 	    String line = "";
 	    
@@ -31,7 +33,7 @@ public class Splitter {
 
 		    sqlstr.addElement(entry);
 
-		    if ((linenum % 50) == 0) {
+		    if ((linenum % 100) == 0) {
 			stmt.executeUpdate(sqlstr.toString());
 			sqlstr.clear();
 		    }
