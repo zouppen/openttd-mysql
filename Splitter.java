@@ -17,7 +17,7 @@ public class Splitter {
 					"user=joell&password=hohfah3I");
 
 	Statement stmt = conn.createStatement();
-	SQLBuilder sqlstr = new SQLBuilder();
+	SQLBuilder sqlstr = new SQLBuilder(start);
 
 	for (String filename: args) {
 	    Scanner scanner = new Scanner(new File(filename), "UTF-8");
@@ -29,11 +29,11 @@ public class Splitter {
 		    line = scanner.nextLine();
 		    LogLine entry = new LogLine(line);
 
-		    entry.appendSQL(sqlstr);
-		    sqlstr.append(',');
+		    sqlstr.addElement(entry);
 
-		    if ((linenum % 2) == 0) {
-			sendSQL(sqlstr);
+		    if ((linenum % 50) == 0) {
+			stmt.executeUpdate(sqlstr.toString());
+			sqlstr.clear();
 		    }
 		    
 		    linenum++;
@@ -47,17 +47,12 @@ public class Splitter {
 	    } finally {
 		scanner.close();
 
-		sendSQL(sqlstr);
+		// One more time
+		stmt.executeUpdate(sqlstr.toString());
+		sqlstr.clear();
+
 	    }
 	}
-    }
-
-    private static void sendSQL(SQLBuilder sqlstr) {
-	sqlstr.deleteLast();
-	sqlstr.append(';');
-	System.out.println(sqlstr);
-	sqlstr.empty();
-	sqlstr.append(start);
     }
 
     private static ResultSet getEmptyResult(Statement stmt)
