@@ -13,7 +13,7 @@ public class Splitter {
     private static final String start = "INSERT weblog (server,service,ip,date,request,response,bytes,referer,browser) values ";
 
     private static final String filenameRegex =
-	"^(.*)/(.*)\\.\\d{4}-\\d{2}-\\d{2}\\.gz";
+	"^.*/(.*)/(.*)\\.\\d{4}-\\d{2}-\\d{2}\\.gz";
     
     public static void main(String args[]) throws Exception {
 	
@@ -26,6 +26,7 @@ public class Splitter {
 	Pattern filenamePattern = Pattern.compile(filenameRegex);
 
 	for (String filename: args) {
+	    System.out.println("Käsitellään tiedostoa "+filename + "...");
 
 	    Matcher matcher = filenamePattern.matcher(filename);
 	    if (!matcher.matches() || matcher.groupCount() != 2) {
