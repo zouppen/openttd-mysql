@@ -8,7 +8,7 @@ import java.lang.StringBuilder;
 
 public class LogLine {
 
-    private static final String logEntryRegEx = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+|-) \"([^\"]*)\" \"([^\"]+)\"";
+    private static final String logEntryRegEx = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+|-) \"(.*)\" \"(.*)\"$";
     private static final int logEntryGroups = 9;
     private static final Pattern logEntryPattern;
 
@@ -52,9 +52,12 @@ public class LogLine {
 	this.response = new Integer(matcher.group(6));
 	if (!"-".equals(matcher.group(7))) // else null
 	    this.bytes = new Integer(matcher.group(7));
-	if (!matcher.group(8).equals("-"))
+	if (!(matcher.group(8).equals("-") ||
+	      matcher.group(8).equals("")))
 	    this.referer = matcher.group(8);
-	this.browser = matcher.group(9);
+	if (!(matcher.group(9).equals("-") ||
+	      matcher.group(9).equals("")))
+	    this.browser = matcher.group(9);
     }
 
     public void appendSQL(SQLBuilder sb) {

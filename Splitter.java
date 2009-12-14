@@ -26,7 +26,7 @@ public class Splitter {
 	Pattern filenamePattern = Pattern.compile(filenameRegex);
 
 	for (String filename: args) {
-	    System.out.println("Käsitellään tiedostoa "+filename + "...");
+	    System.out.println(filename);
 
 	    Matcher matcher = filenamePattern.matcher(filename);
 	    if (!matcher.matches() || matcher.groupCount() != 2) {
@@ -49,7 +49,10 @@ public class Splitter {
 		    sqlstr.addElement(entry);
 
 		    if ((linenum % 100) == 0) {
-			stmt.executeUpdate(sqlstr.toString());
+			String command = sqlstr.toString();
+			if (!"".equals(command)) {
+			    stmt.executeUpdate(command);
+			}
 			sqlstr.clear();
 		    }
 		    
@@ -64,10 +67,12 @@ public class Splitter {
 	    } finally {
 		scanner.close();
 
-		// One more time
-		stmt.executeUpdate(sqlstr.toString());
+		// One more time, flush the sql buffer
+		String command = sqlstr.toString();
+		if (!"".equals(command)) {
+			stmt.executeUpdate(command);
+		}
 		sqlstr.clear();
-
 	    }
 	}
     }
