@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class SQLBuilder {
 
     private StringBuilder sb = new StringBuilder();
-    private ArrayList<LogLine> lines = new ArrayList<LogLine>();
+    private ArrayList<Appender> lines = new ArrayList<Appender>();
     private final String start;
     private static final DateFormat sqlFormat;
 
@@ -21,8 +21,8 @@ public class SQLBuilder {
 	this.start = start;
     }
 
-    public void addElement(LogLine line) {
-	lines.add(line);
+    public void addElement(Appender line) {
+	if (line.hasData()) lines.add(line);
     }
 
     public void appendString(String str) {
@@ -67,11 +67,11 @@ public class SQLBuilder {
 	sb.setLength(0);
 	if (lines.size() == 0) return "";
 
-	LogLine last = lines.remove(lines.size()-1);
+	Appender last = lines.remove(lines.size()-1);
 
 	append(start);
 	
-	for (LogLine line : lines) {
+	for (Appender line : lines) {
 	    line.appendSQL(this);
 	    append(',');
 	}

@@ -10,7 +10,9 @@ import java.util.regex.*;
  */
 public class Splitter {
 
-    private static final String start = "INSERT weblog (server,service,ip,date,request,response,bytes,referer,browser) values ";
+    //private static final String start = "INSERT weblog (server,service,ip,date,request,response,bytes,referer,browser) values ";
+    private static final String start_ip = "INSERT IGNORE ip (ip) values ";
+    private static final String start_browser = "INSERT IGNORE browser_raw (browser) values ";
 
     private static final String filenameRegex =
 	"^.*/(.*)/(.*)\\.\\d{4}-\\d{2}-\\d{2}\\.gz";
@@ -22,7 +24,9 @@ public class Splitter {
 					"user=joell&password=hohfah3I");
 
 	Statement stmt = conn.createStatement();
-	SQLBuilder sqlstr = new SQLBuilder(start);
+	//SQLBuilder sqlstr = new SQLBuilder(start);
+	SQLBuilder sqlstr_browser = new SQLBuilder(start_browser);
+	SQLBuilder sqlstr_ip = new SQLBuilder(start_ip);
 	Pattern filenamePattern = Pattern.compile(filenameRegex);
 
 	for (String filename: args) {
@@ -45,15 +49,28 @@ public class Splitter {
 		while (true) {
 		    line = scanner.nextLine();
 		    LogLine entry = new LogLine(server,service,line);
+		    //Appender ap_ip = new LineAppender(entry);
+		    Appender ap_ip = new IPAppender(entry);
+		    Appender ap_browser = new BrowserAppender(entry);
 
-		    sqlstr.addElement(entry);
+		    //sqlstr.addElement_browser(entry);
+		    sqlstr_ip.addElement(ap_ip);
+		    sqlstr_browser.addElement(ap_browser);
 
 		    if ((linenum % 100) == 0) {
-			String command = sqlstr.toString();
+			String command = sqlstr_ip.toString();
 			if (!"".equals(command)) {
 			    stmt.executeUpdate(command);
 			}
-			sqlstr.clear();
+
+			command = sqlstr_browser.toString();
+			if (!"".equals(command)) {
+			    stmt.executeUpdate(command);
+			}
+			
+			//sqlstr.clear();
+			sqlstr_ip.clear();
+			sqlstr_browser.clear();
 		    }
 		    
 		    linenum++;
@@ -66,13 +83,21 @@ public class Splitter {
 		throw e;
 	    } finally {
 		scanner.close();
-
+		
 		// One more time, flush the sql buffer
-		String command = sqlstr.toString();
+		String command = sqlstr_ip.toString();
 		if (!"".equals(command)) {
-			stmt.executeUpdate(command);
+		    stmt.executeUpdate(command);
 		}
-		sqlstr.clear();
+		
+		command = sqlstr_browser.toString();
+		if (!"".equals(command)) {
+		    stmt.executeUpdate(command);
+		}
+		
+		//sqlstr.clear();
+		sqlstr_ip.clear();
+		sqlstr_browser.clear();
 	    }
 	}
     }

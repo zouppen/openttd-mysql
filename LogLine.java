@@ -32,8 +32,9 @@ public class LogLine {
 	outputFormat = DateFormat.getInstance();
     }
 
-    public LogLine(String server, String service,String line) throws Exception {
- 
+    public LogLine(String server, String service,String line)
+	throws Exception {
+	
 	this.server = server;
 	this.service = service;
 
@@ -60,33 +61,10 @@ public class LogLine {
 	    this.browser = matcher.group(9);
     }
 
-    public void appendSQL(SQLBuilder sb) {
-	
-	sb.append('(');
-	sb.appendString(server);
-	sb.append(',');
-	sb.appendString(service);
-	sb.append(',');
-	sb.appendString(ip);
-	sb.append(',');
-	sb.appendDate(date);
-	sb.append(',');
-	sb.appendString(request);
-	sb.append(',');
-	sb.appendInteger(response);
-	sb.append(',');
-	sb.appendInteger(bytes);
-	sb.append(',');
-	sb.appendString(referer);
-	sb.append(',');
-	sb.appendString(browser);
-	sb.append(')');
-    }
 
     public String engineerDebug() {
 	return "IP: "+ this.ip +
 	    "\nDate: " + outputFormat.format(this.date) +
 	    "\nBrowser: " + this.browser;
-    }
-
+    }    
 }
