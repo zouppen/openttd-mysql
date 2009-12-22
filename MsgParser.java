@@ -6,17 +6,14 @@ import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
 import java.lang.StringBuilder;
 
-public class MsgParser extends LineParser {
+public class MsgParser implements LineParser {
 
     private static final String sqlStart = "INSERT chat (nick,msg) values ";
 
-    private static final String matchingRegEx = "^\[Kaikki] ([^:]+) (.*)";
+    private static final String matchingRegEx = "^\\[Kaikki\\] ([^:]+) (.*)";
     private static final int matchingGroups = 2;
     private static final Pattern matchingPattern;
 
-    private static final DateFormat apacheFormat;
-    private static final DateFormat outputFormat;
-	
     public String nick;
     public String msg;
 
@@ -41,13 +38,17 @@ public class MsgParser extends LineParser {
 	
 	this.nick = matcher.group(1);
 	this.msg = matcher.group(2);
+
+	return true; // Success.
     }
 
     public void appendSQL(SQLBuilder sql) {
 	sql.appendRaw(sqlStart);
 	sql.appendRaw('(');
-	sql.appendString(a.browser);
-	sql.appendRaw(');');
+	sql.appendString(nick);
+	sql.appendRaw(',');
+	sql.appendString(msg);
+	sql.appendRaw(");");
 
     }
 
@@ -58,9 +59,10 @@ public class MsgParser extends LineParser {
 
     public String parserName() {
 	return "Private message";
+    }
 
     public String engineerDebug() {
 	return "NICK: "+ this.nick +
-	    "\nMsg: " + this.msg
+	    "\nMsg: " + this.msg;
     }    
 }

@@ -1,13 +1,13 @@
 import java.io.*;
 import java.util.Scanner;
-import java.util.NoSuchElementException;
 import java.sql.*;
 import java.util.regex.*;
+import java.util.ArrayList;
 
 /**
  * OpenTTD-palvelinlogin parsija
  */
-public class Splitter {
+public class LogReader {
 
     public static void main(String args[]) throws Exception {
 	
@@ -23,11 +23,11 @@ public class Splitter {
 	String line = "";
 	SQLBuilder sqlLine = new SQLBuilder();
 
-	ArrayList<LineParser> lineparsers = new ArrayList<LineParser>();
+	ArrayList<LineParser> lineParsers = new ArrayList<LineParser>();
 
 	// Add all line parsers to this arraylist in the order they
 	// should be tried. If one doesn't match, trying the next one.
-	lineparsers.add(new MsgParser());
+	lineParsers.add(new MsgParser());
 
 	// Neverending loop. Waiting new lines forever.
 	while (true) {
@@ -37,7 +37,7 @@ public class Splitter {
 		LineParser thisParser = null;
 
 		// Looking for a good parser
-		for ( Lineparser cur : lineParsers ) {
+		for ( LineParser cur : lineParsers ) {
 		    if (cur.match(line)) {
 			thisParser = cur;
 			break;
@@ -46,7 +46,7 @@ public class Splitter {
 
 		if ( thisParser == null) continue; // Quietly skip a line.
 
-		System.out.println("Got a line. " + thisParser.parserName +
+		System.out.println("Got a line. " + thisParser.parserName() +
 				   " ... " + thisParser.engineerDebug());
 
 		sqlLine.clear();

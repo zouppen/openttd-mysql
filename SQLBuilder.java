@@ -3,7 +3,6 @@ import java.lang.StringBuilder;
 import java.util.Locale;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 public class SQLBuilder {
 
@@ -13,10 +12,6 @@ public class SQLBuilder {
     static {
 	sqlFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 					    Locale.ENGLISH);
-    }
-
-    public void addElement(Appender line) {
-	if (line.hasData()) lines.add(line);
     }
 
     public void appendString(String str) {
