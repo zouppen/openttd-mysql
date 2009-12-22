@@ -6,65 +6,61 @@ import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
 import java.lang.StringBuilder;
 
-public class LogLine {
+public class MsgParser extends LineParser {
 
-    private static final String logEntryRegEx = "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) (\\d+|-) \"(.*)\" \"(.*)\"$";
-    private static final int logEntryGroups = 9;
-    private static final Pattern logEntryPattern;
+    private static final String sqlStart = "INSERT chat (nick,msg) values ";
+
+    private static final String matchingRegEx = "^\[Kaikki] ([^:]+) (.*)";
+    private static final int matchingGroups = 2;
+    private static final Pattern matchingPattern;
 
     private static final DateFormat apacheFormat;
     private static final DateFormat outputFormat;
 	
-    public String server;
-    public String service;
-    public String ip;
-    public Date date;
-    public String request;
-    public Integer response;
-    public Integer bytes;
-    public String referer;
-    public String browser;
+    public String nick;
+    public String msg;
 
     static {
-	logEntryPattern = Pattern.compile(logEntryRegEx);
-	apacheFormat = new SimpleDateFormat("dd/MMM/yyy:HH:mm:ss Z",
-					    Locale.ENGLISH);
-	outputFormat = DateFormat.getInstance();
+	matchingPattern = Pattern.compile(matchingRegEx);
     }
 
-    public LogLine(String server, String service,String line)
-	throws Exception {
-	
-	this.server = server;
-	this.service = service;
+    /**
+     * Tries to parse a line. Returns false if it's not possible to parse.
+     * In the case of true this method clears its previous state ad it is
+     * guaranteed to have "fresh" values. In the case of false the object's
+     * content is undefined.
+     */
+    public boolean match(String line) {
 
 	ParsePosition position = new ParsePosition(0);
 
-	Matcher matcher = logEntryPattern.matcher(line);
-	if (!matcher.matches() || logEntryGroups != matcher.groupCount()) {
-	    throw new Exception("syntax error.");
+	Matcher matcher = matchingPattern.matcher(line);
+	if (!matcher.matches() || matchingGroups != matcher.groupCount()) {
+	    return false; // this is not right pattern
 	}
-
-	this.ip = matcher.group(1);
-	this.date = apacheFormat.parse(matcher.group(4),position);
-	if (position.getErrorIndex() != -1)
-	    throw new Exception("syntax error in date format.");
-	this.request = matcher.group(5);
-	this.response = new Integer(matcher.group(6));
-	if (!"-".equals(matcher.group(7))) // else null
-	    this.bytes = new Integer(matcher.group(7));
-	if (!(matcher.group(8).equals("-") ||
-	      matcher.group(8).equals("")))
-	    this.referer = matcher.group(8);
-	if (!(matcher.group(9).equals("-") ||
-	      matcher.group(9).equals("")))
-	    this.browser = matcher.group(9);
+	
+	this.nick = matcher.group(1);
+	this.msg = matcher.group(2);
     }
 
+    public void appendSQL(SQLBuilder sql) {
+	sql.appendRaw(sqlStart);
+	sql.appendRaw('(');
+	sql.appendString(a.browser);
+	sql.appendRaw(');');
+
+    }
+
+    public void clear() {
+	this.nick = null;
+	this.msg = null;
+    }
+
+    public String parserName() {
+	return "Private message";
 
     public String engineerDebug() {
-	return "IP: "+ this.ip +
-	    "\nDate: " + outputFormat.format(this.date) +
-	    "\nBrowser: " + this.browser;
+	return "NICK: "+ this.nick +
+	    "\nMsg: " + this.msg
     }    
 }
