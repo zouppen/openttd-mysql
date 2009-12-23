@@ -1,16 +1,16 @@
 import java.util.regex.*;
 import java.text.ParsePosition;
 
-public class MsgParser implements LineParser {
+public class LeaveParser implements LineParser {
 
-    private static final String sqlStart = "INSERT chat (nick,msg) values ";
+    private static final String sqlStart = "INSERT action (nick,action,extra) values ";
 
-    private static final String matchingRegEx = "^\\[Kaikki\\] ([^:]+): (.*)";
+    private static final String matchingRegEx = "^\\*\\*\\* (.*) on poistunut pelist.* \\((.*)\\)$";
     private static final int matchingGroups = 2;
     private static final Pattern matchingPattern;
 
     public String nick;
-    public String msg;
+    public String extra;
 
     static {
 	matchingPattern = Pattern.compile(matchingRegEx);
@@ -32,7 +32,7 @@ public class MsgParser implements LineParser {
 	}
 	
 	this.nick = matcher.group(1);
-	this.msg = matcher.group(2);
+	this.extra = matcher.group(2);
 
 	return true; // Success.
     }
@@ -41,23 +41,22 @@ public class MsgParser implements LineParser {
 	sql.appendRaw(sqlStart);
 	sql.appendRaw('(');
 	sql.appendString(nick);
-	sql.appendRaw(',');
-	sql.appendString(msg);
+	sql.appendRaw(",'leave',");
+	sql.appendString(extra);
 	sql.appendRaw(");");
-
     }
 
     public void clear() {
 	this.nick = null;
-	this.msg = null;
+	this.extra = null;
     }
 
     public String parserName() {
-	return "Private message";
+	return "Leave";
     }
 
     public String engineerDebug() {
 	return "NICK: "+ this.nick +
-	    "\nMsg: " + this.msg;
+	    "\nMsg: " + this.extra;
     }    
 }

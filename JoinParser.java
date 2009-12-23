@@ -1,16 +1,15 @@
 import java.util.regex.*;
 import java.text.ParsePosition;
 
-public class MsgParser implements LineParser {
+public class JoinParser implements LineParser {
 
-    private static final String sqlStart = "INSERT chat (nick,msg) values ";
+    private static final String sqlStart = "INSERT action (nick,action) values ";
 
-    private static final String matchingRegEx = "^\\[Kaikki\\] ([^:]+): (.*)";
-    private static final int matchingGroups = 2;
+    private static final String matchingRegEx = "^\\*\\*\\* (.*) on liittynyt peliin$";
+    private static final int matchingGroups = 1;
     private static final Pattern matchingPattern;
 
     public String nick;
-    public String msg;
 
     static {
 	matchingPattern = Pattern.compile(matchingRegEx);
@@ -32,7 +31,6 @@ public class MsgParser implements LineParser {
 	}
 	
 	this.nick = matcher.group(1);
-	this.msg = matcher.group(2);
 
 	return true; // Success.
     }
@@ -41,23 +39,18 @@ public class MsgParser implements LineParser {
 	sql.appendRaw(sqlStart);
 	sql.appendRaw('(');
 	sql.appendString(nick);
-	sql.appendRaw(',');
-	sql.appendString(msg);
-	sql.appendRaw(");");
-
+	sql.appendRaw(",'join');");
     }
 
     public void clear() {
 	this.nick = null;
-	this.msg = null;
     }
 
     public String parserName() {
-	return "Private message";
+	return "Join";
     }
 
     public String engineerDebug() {
-	return "NICK: "+ this.nick +
-	    "\nMsg: " + this.msg;
+	return "NICK: "+ this.nick;
     }    
 }
