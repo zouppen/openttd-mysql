@@ -10,7 +10,7 @@ public class MsgParser implements LineParser {
 
     private static final String sqlStart = "INSERT chat (nick,msg) values ";
 
-    private static final String matchingRegEx = "^\\[Kaikki\\] ([^:]+) (.*)";
+    private static final String matchingRegEx = "^\\[Kaikki\\] ([^:]+): (.*)";
     private static final int matchingGroups = 2;
     private static final Pattern matchingPattern;
 

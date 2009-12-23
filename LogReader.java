@@ -3,6 +3,7 @@ import java.util.Scanner;
 import java.sql.*;
 import java.util.regex.*;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 /**
  * OpenTTD-palvelinlogin parsija
@@ -16,10 +17,23 @@ public class LogReader {
 					"user=karvanoppa&password=taidu6oK");
 
 	Statement stmt = conn.createStatement();
+
+	try {
+	    processStream(System.in, stmt);
+	} catch (NoSuchElementException foo) {
+	    System.err.println("End of stream has been reached. If you "+
+			       "want to run this parser continuously,\n"+
+			       "try $ tail -f filename | java LogReader");
+	}
+    }
+
+    public static void processStream(InputStream stream, Statement stmt)
+	throws Exception {
+
 	SQLBuilder sqlstr = new SQLBuilder();
 
 	// messages need to be feeded to this program with tail -f 
-	Scanner scanner = new Scanner(System.in, "UTF-8");
+	Scanner scanner = new Scanner(stream, "UTF-8");
 	String line = "";
 	SQLBuilder sqlLine = new SQLBuilder();
 
@@ -54,7 +68,7 @@ public class LogReader {
 		stmt.executeUpdate(sqlLine.toString());
 		
 	    } catch (Exception e) {
-		System.err.println("Content: "+line);
+		System.err.println("\nContent: "+line);
 		throw e;
 	    }
 	}
