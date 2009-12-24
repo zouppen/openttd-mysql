@@ -47,7 +47,7 @@ public class SQLBuilder {
 	sb.append('\'');
     }
 
-    public void appendInteger(Integer val) {
+    public void appendNumber(Number val) {
 	if (val == null) sb.append("NULL");
 	else sb.append(val);
     }

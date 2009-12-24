@@ -24,12 +24,14 @@ public class LogReader {
 	Connection conn = DriverManager.getConnection(db_url,config);
 	Statement stmt = conn.createStatement();
 	
+	System.out.println("Got connection to the database");
+
 	try {
 	    processStream(System.in, stmt);
 	} catch (NoSuchElementException foo) {
 	    System.err.println("End of stream has been reached. If you "+
 			       "want to run this parser continuously,\n"+
-			       "try $ tail -f filename | java LogReader");
+			       "try $ tail -n 0 -f filename | java LogReader");
 	}
     }
 
@@ -50,6 +52,7 @@ public class LogReader {
 	lineParsers.add(new JoinParser());
 	lineParsers.add(new LeaveParser());
 	lineParsers.add(new MsgParser());
+	lineParsers.add(new CompanyParser());
 
 	// Neverending loop. Waiting new lines forever.
 	while (true) {
@@ -68,8 +71,7 @@ public class LogReader {
 
 		if ( thisParser == null) continue; // Quietly skip a line.
 
-		System.out.println("Got a line. " + thisParser.parserName() +
-				   " ... " + thisParser.engineerDebug());
+		System.out.println("Inserted " + thisParser.parserName());
 
 		sqlLine.clear();
 		thisParser.appendSQL(sqlLine);
