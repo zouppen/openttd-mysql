@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.regex.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 /**
  * OpenTTD-palvelinlogin parsija
@@ -12,12 +13,17 @@ public class LogReader {
 
     public static void main(String args[]) throws Exception {
 	
-	Connection conn =
-	    DriverManager.getConnection("jdbc:mysql://192.168.24.1/openttd?" +
-					"user=karvanoppa&password=taidu6oK");
-
+	// Reading the config file. Java wrappings </3
+	Properties config = new Properties();
+	config.setProperty("autoReonnect","true");
+	config.load(new InputStreamReader(new FileInputStream("database.conf"),
+					  "UTF-8"));
+	// Building URI for database
+	String db_url = "jdbc:mysql://" + config.getProperty("hostname") + 
+	    "/" + config.getProperty("database");
+	Connection conn = DriverManager.getConnection(db_url,config);
 	Statement stmt = conn.createStatement();
-
+	
 	try {
 	    processStream(System.in, stmt);
 	} catch (NoSuchElementException foo) {

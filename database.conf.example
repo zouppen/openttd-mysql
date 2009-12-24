@@ -1,0 +1,4 @@
+hostname=my.server.org
+user=me
+password=secret
+database=openttd
