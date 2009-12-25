@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# This command send server commands to the console. Intended to be run
+# in periodic intervals. Rename your screen name (openttd) if
+# needed. You can name your screen with -S option when starting a
+# screen. An example of a crontab entry
+#
+# */10 18-20 * * * ~/openttd/misc/whip
+#
+screen -x openttd -p 0 -X stuff "
+companies
+"

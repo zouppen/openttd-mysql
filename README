@@ -1,0 +1,46 @@
+OpenTTD console to MySQL gateway
+Author: Joel Lehtonen, joel.lehtonen ät jyu.fi
+
+Installation:
+-------------
+
+Download mysql-connector-java from somewhere. Version 5.0 is good enough.
+Put jar to your CLASSPATH.
+
+Compile all java files in this directory:
+
+$ javac *.java
+
+Generate tables to your database. Make a new user or give at least
+INSERT privilege to that database. You may call the database 'openttd'.
+Initial database setup can be found from the file 'misc/initial.sql'.
+
+Fill in database.conf with your favourite editor:
+
+$ cp database.conf.example database.conf
+$ emacs database.conf    #or vim, nano, ...
+
+Usage:
+------
+
+Start OpenTTD server in a screen or other facility where it is
+possible to log everything that server outputs. Start screen with -L
+or use the the script set I have made for running OpenTTD dedicated
+and scheduled server.
+
+To get company statistics to the database you need a 'whipper' which
+pushes a command to the server in periodic intervals. See a file
+'misc/whip' for details.
+
+Find a location of your OpenTTD server log and adapt the following
+line to your needs:
+
+$ tail -n 0 -f ~/openttd/screenlog.0 | java LogReader
+
+Other notes:
+------------
+
+PLEASE NOTE: This thing requires OpenTTD server language to be Finnish
+for this thing to work. Switch it to Finnish or fix this software to
+parse English messages and mail me a patch. :-)
+
