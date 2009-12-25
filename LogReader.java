@@ -15,7 +15,7 @@ public class LogReader {
 	
 	// Reading the config file. Java wrappings </3
 	Properties config = new Properties();
-	config.setProperty("autoReonnect","true");
+	config.setProperty("autoReconnect","true");
 	config.load(new InputStreamReader(new FileInputStream("database.conf"),
 					  "UTF-8"));
 	// Building URI for database
