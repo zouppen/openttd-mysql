@@ -13,11 +13,16 @@ public class LogReader {
 
     public static void main(String args[]) throws Exception {
 	
-	// Reading the config file. Java wrappings </3
 	Properties config = new Properties();
+
+	// Some default values
 	config.setProperty("autoReconnect","true");
+	config.setProperty("allowMultiQueries","true");
+
+	// Reading config (overriding defaults if needed)
 	config.load(new InputStreamReader(new FileInputStream("database.conf"),
 					  "UTF-8"));
+
 	// Building URI for database
 	String db_url = "jdbc:mysql://" + config.getProperty("hostname") + 
 	    "/" + config.getProperty("database");
