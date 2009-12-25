@@ -29,7 +29,7 @@ public class LogReader {
 	Connection conn = DriverManager.getConnection(db_url,config);
 	Statement stmt = conn.createStatement();
 	
-	System.out.println("Got connection to the database");
+	System.out.println("Got a connection to the database");
 
 	try {
 	    processStream(System.in, stmt);
