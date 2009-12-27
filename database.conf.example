@@ -2,3 +2,4 @@ hostname=my.server.org
 user=me
 password=secret
 database=openttd
+max_reconnects=3

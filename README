@@ -1,6 +1,14 @@
 OpenTTD console to MySQL gateway
 Author: Joel Lehtonen, joel.lehtonen ät jyu.fi
 
+Description:
+------------
+
+A gateway from OpenTTD console to MySQL database. Another project that
+has the same goal is Autopilot (http://wiki.openttdcoop.org/Autopilot).
+Maybe in future they may use the same database schema. Pick the one
+that suits your needs. :-)
+
 Installation:
 -------------
 
