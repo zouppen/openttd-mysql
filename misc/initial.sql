@@ -23,3 +23,12 @@ CREATE TABLE `company_stats` ( `id` int(11) NOT NULL auto_increment,
   default NULL, `roadvs` smallint(6) default NULL, `planes`
   smallint(6) default NULL, `ships` smallint(6) default NULL, PRIMARY
   KEY (`id`), KEY `time` (`time`), KEY `company_id` (`company_id`) );
+
+CREATE TABLE `gamedate` (
+  `id` int(11) NOT NULL auto_increment,
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `ingame` date NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `time` (`time`),
+  KEY `ingame` (`ingame`)
+)

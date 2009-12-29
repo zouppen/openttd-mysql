@@ -6,7 +6,7 @@ public interface LineParser {
      * guaranteed to have "fresh" values. In the case of false the object's
      * content is undefined.
      */
-    public boolean match(String line);
+    public boolean match(String line) throws Exception;
 
     /**
      * Appends its contents to a sqlbuilder. Returns full statements already
