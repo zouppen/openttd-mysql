@@ -1,5 +1,4 @@
 import java.util.regex.*;
-import java.text.ParsePosition;
 import java.math.BigInteger;
 
 public class CompanyParser implements LineParser {
@@ -34,8 +33,6 @@ public class CompanyParser implements LineParser {
      * content is undefined.
      */
     public boolean match(String line) {
-
-	ParsePosition position = new ParsePosition(0);
 
 	Matcher matcher = matchingPattern.matcher(line);
 	if (!matcher.matches() || matchingGroups != matcher.groupCount()) {
