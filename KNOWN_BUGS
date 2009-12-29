@@ -1,0 +1,26 @@
+Known bugs
+==========
+
+#1: Company parameters
+----------------------
+
+In table company there is a problem if a company picks same name it
+has had previously. Then there should be a new row containing the new
+name. Because table key prevents same values, it is not supported.
+
+Steps to reproduce:
+
+1. Start a new company
+2. Wait for database update
+3. Rename your company
+4. Wait for database update
+5. Pick a name you had at first
+6. The database is not updated, the last row contains wrong company name
+
+Possible fix:
+
+Replace 'insert ignore' with a procedure which inserts a new line only
+if it is different from the previous one. Values need not to be
+unique.
+
+Status: TODO
