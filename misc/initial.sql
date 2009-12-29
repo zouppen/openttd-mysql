@@ -55,4 +55,4 @@ CREATE TABLE `gamedate` (
   PRIMARY KEY  (`id`),
   KEY `time` (`time`),
   KEY `ingame` (`ingame`)
-)
+);
