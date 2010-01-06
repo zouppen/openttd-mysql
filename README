@@ -4,16 +4,16 @@ OpenTTD console to MySQL gateway
 
 Author: Joel Lehtonen, joel.lehtonen ät jyu.fi
 
-Description:
-============
+Description
+===========
 
 A gateway from OpenTTD console to MySQL database. Another project that
 has the same goal is Autopilot (http://wiki.openttdcoop.org/Autopilot).
 Maybe in future they may use the same database schema. Pick the one
 that suits your needs. :-)
 
-Licensing:
-==========
+Licensing
+=========
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -31,8 +31,8 @@ statistics page.
 More information about GNU Affero General Public License can be found
 at http://www.gnu.org/licenses/agpl.html .
 
-Installation:
-=============
+Installation
+============
 
 OpenTTD
 -------
@@ -109,7 +109,7 @@ Usage
 Start OpenTTD server in a screen or other facility where it is
 possible to log everything that the server outputs. Start screen with -L
 or use the the script set I have made for running OpenTTD dedicated
-and scheduled server. For the script, see scripts/ directory.
+and scheduled server. For the script, see misc/scripts/ directory.
 
 If you have different kind of logging (for example using pipes or
 netcat) you can modify launch.sh for your needs. If you use just
