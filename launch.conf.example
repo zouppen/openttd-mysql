@@ -1,0 +1,8 @@
+# These paths are relative to the directory where openttd-mysql is located.
+#
+# Copy or link mysql-connector-java-5.0.jar to this directory or modify
+# CONNECTOR path to point to mysql-connector-java. Then Change LOG variable to
+# point a log file of screen running openttd dedicated server. 
+
+CONNECTOR=mysql-connector-java-5.0.jar
+LOG=~/openttd/screenlog.0
