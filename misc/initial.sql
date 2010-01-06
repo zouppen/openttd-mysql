@@ -11,10 +11,10 @@ CREATE TABLE `chat` (
 CREATE TABLE `action` (
   `id` int(11) NOT NULL auto_increment,
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `nick` varchar(20) NOT NULL, 
+  `nick` varchar(20) NOT NULL,
   `action` enum('join','leave') NOT NULL,
-  `extra` text, PRIMARY
-  KEY (`id`),
+  `extra` text,
+  PRIMARY KEY  (`id`),
   KEY `nick` (`nick`),
   KEY `time` (`time`),
   KEY `action` (`action`)
@@ -34,7 +34,7 @@ CREATE TABLE `company` (
 
 CREATE TABLE `company_stats` (
   `id` int(11) NOT NULL auto_increment,
-  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `gamedate` date default NULL,
   `company_id` int(11) NOT NULL,
   `money` bigint(20) default NULL,
   `loan` bigint(20) default NULL,
@@ -43,9 +43,35 @@ CREATE TABLE `company_stats` (
   `roadvs` smallint(6) default NULL,
   `planes` smallint(6) default NULL,
   `ships` smallint(6) default NULL,
-  PRIMARY KEY (`id`),
-  KEY `time` (`time`),
-  KEY `company_id` (`company_id`)
+  `income` bigint(20) default NULL,
+  `expenses` bigint(20) default NULL,
+  `cargo` int(11) default NULL,
+  `tiles` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `company_id` (`company_id`),
+  KEY `gamedate` (`gamedate`)
+);
+
+CREATE TABLE `company_annual` (
+  `id` int(11) NOT NULL auto_increment,
+  `company_id` int(11) NOT NULL,
+  `year` smallint(6) NOT NULL,
+  `cost_construction` bigint(20) default NULL,
+  `cost_new_vs` bigint(20) default NULL,
+  `cost_train` bigint(20) default NULL,
+  `cost_road` bigint(20) default NULL,
+  `cost_air` bigint(20) default NULL,
+  `cost_ship` bigint(20) default NULL,
+  `cost_property` bigint(20) default NULL,
+  `income_train` bigint(20) default NULL,
+  `income_road` bigint(20) default NULL,
+  `income_air` bigint(20) default NULL,
+  `income_ship` bigint(20) default NULL,
+  `loan_interest` bigint(20) default NULL,
+  `other` bigint(20) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `company_id` (`company_id`),
+  KEY `year` (`year`)
 );
 
 CREATE TABLE `gamedate` (
