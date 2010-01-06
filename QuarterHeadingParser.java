@@ -39,7 +39,7 @@ public class QuarterHeadingParser implements LineParser {
 	}
 
 	int year = Integer.parseInt(matcher.group(1));
-	int month = Integer.parseInt(matcher.group(2));
+	int month = Integer.parseInt(matcher.group(2)); // starts from 0
 	this.day = (new GregorianCalendar(year, month, 1)).getTime();
 	
 	return true; // Success.

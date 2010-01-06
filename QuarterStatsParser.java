@@ -3,10 +3,10 @@ import java.math.BigInteger;
 
 public class QuarterStatsParser implements LineParser {
 
-    private static final String sqlStart_stats = "INSERT company_stats (company_id,date,money,loan,value,trains,roadvs,planes,ships,income,expenses,cargo,tiles) values ";
+    private static final String sqlStart_stats = "INSERT company_stats (company_id,gamedate,money,loan,value,trains,roadvs,planes,ships,income,expenses,cargo,tiles) values ";
     private static final String sqlStart_main = "INSERT IGNORE company (company_id,colour,name,founded) values ";
 
-    private static final String matchingRegEx = "^(\\d+)\\(([^\\)]*)\\) Company: .* Year Founded: (\\d+) Money: (-?\\d+) Loan: (\\d+) Value: (-?\\d+) \\(T:(\\d+), R:(\\d+), P:(\\d+), S:(\\d+)\\)  Income: (-?\\d+) Expenses: (-?\\d+) Delivered cargo: (-?\\d+) Tiles owned: (-?\\d+)$";
+    private static final String matchingRegEx = "^linkki: (\\d+)\\(([^\\)]*)\\) Company: (.*) Year Founded: (\\d+) Money: (-?\\d+) Loan: (\\d+) Value: (-?\\d+) \\(T:(\\d+), R:(\\d+), P:(\\d+), S:(\\d+)\\)  Income: (-?\\d+) Expenses: (-?\\d+) Delivered cargo: (-?\\d+) Tiles owned: (-?\\d+) *$";
     private static final int matchingGroups = 15;
     private static final Pattern matchingPattern;
 

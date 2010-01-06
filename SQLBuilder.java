@@ -63,4 +63,8 @@ public class SQLBuilder {
     public void deleteLast() {
 	sb.deleteCharAt(sb.length()-1);
     }
+    
+    public boolean isEmpty() {
+	return (sb.length() == 0);
+    }
 }

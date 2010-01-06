@@ -102,6 +102,9 @@ public class LogReader {
 		sqlLine.clear();
 		thisParser.appendSQL(sqlLine);
 
+		if (sqlLine.isEmpty()) continue; // No SQL to add.
+
+		// Trying to put lines to the database
 		try {
 		    stmt.executeUpdate(sqlLine.toString());
 		} catch (SQLException sql_e) {
