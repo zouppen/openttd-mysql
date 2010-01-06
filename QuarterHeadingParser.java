@@ -1,27 +1,25 @@
 import java.util.regex.*;
-import java.text.ParsePosition;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.GregorianCalendar;
 import java.util.Date;
 
 /**
- * Parses OpenTTD getdate command output.
+ * Parses OpenTTD quarter year headings output.
+ * This is supported in Eladith's openttd-output patch.
+ * 
+ * Appends dates to SQL, too.
  */
-public class DateParser implements LineParser {
+public class QuarterHeadingParser implements LineParser {
 
     private static final String sqlStart = "INSERT gamedate (ingame) values ";
 
-    private static final String matchingRegEx = "^Date: (.*)$";
-    private static final int matchingGroups = 1;
+    private static final String matchingRegEx = "^linkki: Neljannesvuositilastot (\\d+) / (\\d+)$";
+    private static final int matchingGroups = 2;
     private static final Pattern matchingPattern;
-    private static final DateFormat ottdFormat;
 
     public Date day;
 
     static {
 	matchingPattern = Pattern.compile(matchingRegEx);
-	ottdFormat = new SimpleDateFormat("dd-MM-yyy", Locale.ENGLISH);
     }
     
     /**
@@ -35,17 +33,15 @@ public class DateParser implements LineParser {
      */
     public boolean match(String line) throws Exception {
 
-	ParsePosition position = new ParsePosition(0);
-
 	Matcher matcher = matchingPattern.matcher(line);
 	if (!matcher.matches() || matchingGroups != matcher.groupCount()) {
 	    return false; // this is not right pattern
 	}
-	
-	this.day = ottdFormat.parse(matcher.group(1),position);
-	if (position.getErrorIndex() != -1)
-	    throw new Exception("syntax error in date format.");
 
+	int year = Integer.parseInt(matcher.group(1));
+	int month = Integer.parseInt(matcher.group(2));
+	this.day = (new GregorianCalendar(year, month, 1)).getTime();
+	
 	return true; // Success.
     }
 
@@ -61,7 +57,7 @@ public class DateParser implements LineParser {
     }
 
     public String parserName() {
-	return "Game day";
+	return "Quarter year heading";
     }
 
     public String engineerDebug() {

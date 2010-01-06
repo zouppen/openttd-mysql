@@ -1,15 +1,16 @@
 import java.util.regex.*;
 import java.math.BigInteger;
 
-public class CompanyParser implements LineParser {
+public class QuarterStatsParser implements LineParser {
 
-    private static final String sqlStart_stats = "INSERT company_stats_old (company_id,money,loan,value,trains,roadvs,planes,ships) values ";
+    private static final String sqlStart_stats = "INSERT company_stats (company_id,date,money,loan,value,trains,roadvs,planes,ships,income,expenses,cargo,tiles) values ";
     private static final String sqlStart_main = "INSERT IGNORE company (company_id,colour,name,founded) values ";
 
-    private static final String matchingRegEx = "^#:(\\d+)\\(([^\\)]*)\\) Company Name: '([^']*)'  Year Founded: (\\d+)  Money: (-?\\d+)  Loan: (\\d+)  Value: (-?\\d+)  \\(T:(\\d+), R:(\\d+), P:(\\d+), S:(\\d+)\\).*$";
-    private static final int matchingGroups = 11;
+    private static final String matchingRegEx = "^(\\d+)\\(([^\\)]*)\\) Company: .* Year Founded: (\\d+) Money: (-?\\d+) Loan: (\\d+) Value: (-?\\d+) \\(T:(\\d+), R:(\\d+), P:(\\d+), S:(\\d+)\\)  Income: (-?\\d+) Expenses: (-?\\d+) Delivered cargo: (-?\\d+) Tiles owned: (-?\\d+)$";
+    private static final int matchingGroups = 15;
     private static final Pattern matchingPattern;
 
+    public QuarterHeadingParser heading;
     public Integer company_id;
     public String colour;
     public String name;
@@ -21,9 +22,21 @@ public class CompanyParser implements LineParser {
     public Integer roadvs;
     public Integer planes;
     public Integer ships;
+    public BigInteger income;
+    public BigInteger expenses;
+    public Integer cargo;
+    public Integer tiles;
 
     static {
 	matchingPattern = Pattern.compile(matchingRegEx);
+    }
+
+    /**
+     * A reference to quarter heading is needed to get a right date
+     * because it comes before this line.
+     */
+    QuarterStatsParser(QuarterHeadingParser heading) {
+	this.heading = heading;
     }
 
     /**
@@ -50,7 +63,10 @@ public class CompanyParser implements LineParser {
 	this.roadvs = new Integer(matcher.group(9));
 	this.planes = new Integer(matcher.group(10));
 	this.ships = new Integer(matcher.group(11));
-
+	this.income = new BigInteger(matcher.group(12));
+	this.expenses = new BigInteger(matcher.group(13));
+	this.cargo = new Integer(matcher.group(14));
+	this.tiles = new Integer(matcher.group(15));
 	return true; // Success.
     }
 
@@ -73,6 +89,8 @@ public class CompanyParser implements LineParser {
 	sql.appendRaw('(');
 	sql.appendNumber(company_id);
 	sql.appendRaw(',');
+	sql.appendDate(heading.day);
+	sql.appendRaw(',');
 	sql.appendNumber(money);
 	sql.appendRaw(',');
 	sql.appendNumber(loan);
@@ -86,6 +104,14 @@ public class CompanyParser implements LineParser {
 	sql.appendNumber(planes);
 	sql.appendRaw(',');
 	sql.appendNumber(ships);
+	sql.appendRaw(',');
+	sql.appendNumber(income);
+	sql.appendRaw(',');
+	sql.appendNumber(expenses);
+	sql.appendRaw(',');
+	sql.appendNumber(cargo);
+	sql.appendRaw(',');
+	sql.appendNumber(tiles);
 	sql.appendRaw(");");
     }
 
@@ -99,13 +125,17 @@ public class CompanyParser implements LineParser {
 	this.roadvs = null;
 	this.planes = null;
 	this.ships = null;
+	this.income = null;
+	this.expenses = null;
+	this.cargo = null;
+	this.tiles = null;
     }
 
     public String parserName() {
-	return "Company";
+	return "Quarter year stats";
     }
 
     public String engineerDebug() {
-	return "company: "+ this.company_id + " money: " + this.money;
+	return "quarter. company: "+ this.company_id + " money: " + this.money;
     }
 }

@@ -19,13 +19,19 @@ public class LogReader {
     private int maxReconnects;
     
     static {
+	// Some stateful parsers for statistics headings
+	AnnualHeadingParser annualHeading = new AnnualHeadingParser();
+	QuarterHeadingParser quarterHeading = new QuarterHeadingParser();
+	
 	// Add all line parsers to this arraylist in the order they
 	// should be tried. If one doesn't match, trying the next one.
-	lineParsers.add(new DateParser());
 	lineParsers.add(new JoinParser());
 	lineParsers.add(new LeaveParser());
 	lineParsers.add(new MsgParser());
-	lineParsers.add(new CompanyParser());
+	lineParsers.add(annualHeading);
+	lineParsers.add(quarterHeading);
+	lineParsers.add(new AnnualStatsParser(annualHeading));
+	lineParsers.add(new QuarterStatsParser(quarterHeading));
     }
     
     /**
