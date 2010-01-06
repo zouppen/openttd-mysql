@@ -1,3 +1,4 @@
 *.class
 *~
+launch.conf
 database.conf
