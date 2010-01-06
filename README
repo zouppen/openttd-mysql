@@ -1,8 +1,11 @@
+================================
 OpenTTD console to MySQL gateway
+================================
+
 Author: Joel Lehtonen, joel.lehtonen ät jyu.fi
 
 Description:
-------------
+============
 
 A gateway from OpenTTD console to MySQL database. Another project that
 has the same goal is Autopilot (http://wiki.openttdcoop.org/Autopilot).
@@ -10,7 +13,7 @@ Maybe in future they may use the same database schema. Pick the one
 that suits your needs. :-)
 
 Licensing:
-----------
+==========
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -29,45 +32,112 @@ More information about GNU Affero General Public License can be found
 at http://www.gnu.org/licenses/agpl.html .
 
 Installation:
+=============
+
+OpenTTD
+-------
+
+Patching OpenTTD is needed for getting more sophisticated company
+statistics. The required patch is not yet part of OpenTTD. Without
+patching you are getting only joins, leaves and private messages to
+the database. Note: You don't need to patch the clients. Players may
+use unpatched OpenTTD.
+
+Get the sources of OpenTTD from http://www.openttd.org/ and patch them
+with http://users.jyu.fi/~jasavilh/openttd/openttd_output.patch.100106 .
+Compile and install as root or as your user with --prefix.
+
+Start OpenTTD as user once to generate initial config:
+
+$ openttd
+
+Edit ~/.openttd/openttd.cfg and verify you have English as server's
+language. Change language variable to:
+
+  language = english.lng
+
+This is important for the parser to work. You may still use your
+native language in game.
+
+If you are running the server and client as the same user (which is
+not recommended anyway) you can write a separate configuration file
+for your dedicated server. How to do that is your homework. :-)
+
+MySQL
+-----
+
+Install and configure mysql if you haven't done so yet. Instruction
+can be found at http://www.mysql.com/ or from the documentation of
+your Linux distribution.
+
+Make a new mysql user or give at least INSERT privilege to that
+database.
+
+Create a new database. You may call the database 'openttd'. You can
+setup initial tables by executing the SQL commands at
+'misc/initial.sql'.
+
+mysql-connector-java
+--------------------
+
+Download mysql-connector-java from
+http://dev.mysql.com/downloads/connector/j/. You may also use your
+Linux distributor's package, if available. Version 5.0 is good enough.
+
+You can install mysql-connector-java as an ordinary user, too.
+
+openttd-mysql
 -------------
 
-Download mysql-connector-java from somewhere. Version 5.0 is good enough.
-Put jar to your CLASSPATH.
-
-Compile all java files in this directory:
+Compile all java files in the directory where openttd-mysql is:
 
 $ javac *.java
 
-Generate tables to your database. Make a new user or give at least
-INSERT privilege to that database. You may call the database 'openttd'.
-Initial database setup can be found from the file 'misc/initial.sql'.
-
-Fill in database.conf with your favourite editor:
+Fill in database.conf and launch.conf with your favourite
+editor. These files should be very self-explanatory.
 
 $ cp database.conf.example database.conf
-$ emacs database.conf    #or vim, nano, ...
+$ cp launch.conf.example launch.conf
+$ emacs database.conf launch.conf   #or vim, nano, ...
 
-Usage:
-------
+You need to know the screenlog file name in launch.conf. Read the
+following chapter first if you have problems.
+
+Usage
+=====
 
 Start OpenTTD server in a screen or other facility where it is
-possible to log everything that server outputs. Start screen with -L
+possible to log everything that the server outputs. Start screen with -L
 or use the the script set I have made for running OpenTTD dedicated
-and scheduled server.
+and scheduled server. For the script, see scripts/ directory.
 
-To get company statistics to the database you need a 'whipper' which
-pushes a command to the server in periodic intervals. See a file
-'misc/whip' for details.
+If you have different kind of logging (for example using pipes or
+netcat) you can modify launch.sh for your needs. If you use just
+screen logging, you can start openttd-mysql by running:
 
-Find a location of your OpenTTD server log and adapt the following
-line to your needs:
+$ ./launch.sh
 
-$ tail -n 0 -f ~/openttd/screenlog.0 | java LogReader
+Remember to start OpenTTD server, too!
 
-Other notes:
-------------
+Troubleshooting
+===============
 
-PLEASE NOTE: This thing requires OpenTTD server language to be Finnish
-for this thing to work. Switch it to Finnish or fix this software to
-parse English messages and mail me a patch. :-)
+Q: Why openttd-mysql records only private messages but not company information? 
+A: You may have forgotten to patch OpenTTD. Re-read installation chapter.
 
+Q: Why openttd-mysql records only company information, but no private messaging?
+A: Your OpenTTD dedicated server is not probably speaking English.
+   Re-read installation chapter.
+
+Miscellaneous
+=============
+
+First of all, I'd like to thank all the players in our
+Linkkigames. You have helped a lot in creation of mysql statistics by
+providing interesting data. Special thanks goes to Eladith and
+Katajakasa. Eladith has created the patch for OpenTTD and Katajakasa
+has made an interesting game statistics page from Linkkigames. It is
+located at http://users.jyu.fi/~tutavirt/ttdstats/ .
+
+You are welcome to mail me patches and even just say "Hello". :-) My
+e-mail address is joel.lehtonen ät jyu.fi.

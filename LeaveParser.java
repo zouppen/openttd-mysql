@@ -4,7 +4,7 @@ public class LeaveParser implements LineParser {
 
     private static final String sqlStart = "INSERT action (nick,action,extra) values ";
 
-    private static final String matchingRegEx = "^\\*\\*\\* (.*) on poistunut pelist.* \\((.*)\\)$";
+    private static final String matchingRegEx = "^\\*\\*\\* (.*) has left the game \\((.*)\\)$";
     private static final int matchingGroups = 2;
     private static final Pattern matchingPattern;
 

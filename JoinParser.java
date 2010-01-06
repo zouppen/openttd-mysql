@@ -4,7 +4,7 @@ public class JoinParser implements LineParser {
 
     private static final String sqlStart = "INSERT action (nick,action) values ";
 
-    private static final String matchingRegEx = "^\\*\\*\\* (.*) on liittynyt peliin$";
+    private static final String matchingRegEx = "^\\*\\*\\* (.*) has joined the game$";
     private static final int matchingGroups = 1;
     private static final Pattern matchingPattern;
 

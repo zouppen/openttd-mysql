@@ -3,7 +3,7 @@ import java.math.BigInteger;
 
 public class CompanyParser implements LineParser {
 
-    private static final String sqlStart_stats = "INSERT company_stats (company_id,money,loan,value,trains,roadvs,planes,ships) values ";
+    private static final String sqlStart_stats = "INSERT company_stats_old (company_id,money,loan,value,trains,roadvs,planes,ships) values ";
     private static final String sqlStart_main = "INSERT IGNORE company (company_id,colour,name,founded) values ";
 
     private static final String matchingRegEx = "^#:(\\d+)\\(([^\\)]*)\\) Company Name: '([^']*)'  Year Founded: (\\d+)  Money: (-?\\d+)  Loan: (\\d+)  Value: (-?\\d+)  \\(T:(\\d+), R:(\\d+), P:(\\d+), S:(\\d+)\\).*$";
