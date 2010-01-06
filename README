@@ -9,6 +9,25 @@ has the same goal is Autopilot (http://wiki.openttdcoop.org/Autopilot).
 Maybe in future they may use the same database schema. Pick the one
 that suits your needs. :-)
 
+Licensing:
+----------
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+It is important to notice if you put this logger running on a server
+you need to provide your users the source code of this product. If you
+haven't made any modifications, you can link to the original git
+repository at http://iki.fi/zouppen/repo/openttd-mysql.git . If you
+are running a modified copy, you need offer your source code. This can
+be done for example by putting a link to the source in your OpenTTD
+statistics page.
+
+More information about GNU Affero General Public License can be found
+at http://www.gnu.org/licenses/agpl.html .
+
 Installation:
 -------------
 
