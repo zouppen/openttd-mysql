@@ -2,7 +2,7 @@ import java.util.regex.*;
 
 public class JoinParser implements LineParser {
 
-    private static final String sqlStart = "INSERT action (nick,action) values ";
+    private static final String sqlStart = "INSERT action (game_id,nick,action) values ";
 
     private static final String matchingRegEx = "^\\*\\*\\* (.*) has joined the game$";
     private static final int matchingGroups = 1;
@@ -34,7 +34,7 @@ public class JoinParser implements LineParser {
 
     public void appendSQL(SQLBuilder sql) {
 	sql.appendRaw(sqlStart);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendString(nick);
 	sql.appendRaw(",'join');");
     }

@@ -3,3 +3,4 @@ user=me
 password=secret
 database=openttd
 max_reconnects=3
+game_id=1

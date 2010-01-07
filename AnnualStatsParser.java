@@ -3,7 +3,7 @@ import java.math.BigInteger;
 
 public class AnnualStatsParser implements LineParser {
 
-    private static final String sqlStart = "INSERT company_annual (company_id,year,cost_construction,cost_new_vs,cost_train,cost_road,cost_air,cost_ship,cost_property,income_train,income_road,income_air,income_ship,loan_interest,other) values ";
+    private static final String sqlStart = "INSERT company_annual (game_id,company_id,year,cost_construction,cost_new_vs,cost_train,cost_road,cost_air,cost_ship,cost_property,income_train,income_road,income_air,income_ship,loan_interest,other) values ";
 
     private static final String matchingRegEx = "^linkki: (\\d+)\\(.* Construction: (-?\\d+)  New Vehicles: (-?\\d+)  Train running cost: (-?\\d+) Roadveh running cost: (-?\\d+) Aircraft running cost: (-?\\d+) Ship running cost: (-?\\d+) Property maintainance: (-?\\d+) Train income: (-?\\d+) Roadveh income: (-?\\d+) Aircraft income: (-?\\d+) Ship income: (-?\\d+) Loan interest: (-?\\d+) Other: (-?\\d+)$";
 	
@@ -72,7 +72,7 @@ public class AnnualStatsParser implements LineParser {
     public void appendSQL(SQLBuilder sql) {
 
 	sql.appendRaw(sqlStart);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendNumber(company_id);
 	sql.appendRaw(',');
 	sql.appendNumber(heading.year);

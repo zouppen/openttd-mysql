@@ -3,8 +3,8 @@ import java.math.BigInteger;
 
 public class QuarterStatsParser implements LineParser {
 
-    private static final String sqlStart_stats = "INSERT company_stats (company_id,gamedate,money,loan,value,trains,roadvs,planes,ships,income,expenses,cargo,tiles) values ";
-    private static final String sqlStart_main = "INSERT IGNORE company (company_id,colour,name,founded) values ";
+    private static final String sqlStart_stats = "INSERT company_stats (game_id,company_id,gamedate,money,loan,value,trains,roadvs,planes,ships,income,expenses,cargo,tiles) values ";
+    private static final String sqlStart_main = "INSERT IGNORE company (game_id,company_id,colour,name,founded) values ";
 
     private static final String matchingRegEx = "^linkki: (\\d+)\\(([^\\)]*)\\) Company: (.*) Year Founded: (\\d+) Money: (-?\\d+) Loan: (\\d+) Value: (-?\\d+) \\(T:(\\d+), R:(\\d+), P:(\\d+), S:(\\d+)\\)  Income: (-?\\d+) Expenses: (-?\\d+) Delivered cargo: (-?\\d+) Tiles owned: (-?\\d+) *$";
     private static final int matchingGroups = 15;
@@ -74,7 +74,7 @@ public class QuarterStatsParser implements LineParser {
 
 	// Company info, database drops this if it's unchanged
 	sql.appendRaw(sqlStart_main);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendNumber(company_id);
 	sql.appendRaw(',');
 	sql.appendString(colour);
@@ -86,7 +86,7 @@ public class QuarterStatsParser implements LineParser {
 	
 	// Company statistics
 	sql.appendRaw(sqlStart_stats);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendNumber(company_id);
 	sql.appendRaw(',');
 	sql.appendDate(heading.day);

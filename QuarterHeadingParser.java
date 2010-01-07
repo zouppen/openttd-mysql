@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class QuarterHeadingParser implements LineParser {
 
-    private static final String sqlStart = "INSERT gamedate (ingame) values ";
+    private static final String sqlStart = "INSERT gamedate (game_id,ingame) values ";
 
     private static final String matchingRegEx = "^linkki: Neljannesvuositilastot (\\d+) / (\\d+)$";
     private static final int matchingGroups = 2;
@@ -47,7 +47,7 @@ public class QuarterHeadingParser implements LineParser {
 
     public void appendSQL(SQLBuilder sql) {
 	sql.appendRaw(sqlStart);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendDate(day);
 	sql.appendRaw(");");
     }

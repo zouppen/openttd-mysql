@@ -2,7 +2,7 @@ import java.util.regex.*;
 
 public class LeaveParser implements LineParser {
 
-    private static final String sqlStart = "INSERT action (nick,action,extra) values ";
+    private static final String sqlStart = "INSERT action (game_id,nick,action,extra) values ";
 
     private static final String matchingRegEx = "^\\*\\*\\* (.*) has left the game \\((.*)\\)$";
     private static final int matchingGroups = 2;
@@ -36,7 +36,7 @@ public class LeaveParser implements LineParser {
 
     public void appendSQL(SQLBuilder sql) {
 	sql.appendRaw(sqlStart);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendString(nick);
 	sql.appendRaw(",'leave',");
 	sql.appendString(extra);

@@ -2,7 +2,7 @@ import java.util.regex.*;
 
 public class MsgParser implements LineParser {
 
-    private static final String sqlStart = "INSERT chat (nick,msg) values ";
+    private static final String sqlStart = "INSERT chat (game_id,nick,msg) values ";
 
     private static final String matchingRegEx = "^\\[All\\] ([^:]+): (.*)";
     private static final int matchingGroups = 2;
@@ -36,7 +36,7 @@ public class MsgParser implements LineParser {
 
     public void appendSQL(SQLBuilder sql) {
 	sql.appendRaw(sqlStart);
-	sql.appendRaw('(');
+	sql.appendRaw("(@cur_game,");
 	sql.appendString(nick);
 	sql.appendRaw(',');
 	sql.appendString(msg);
