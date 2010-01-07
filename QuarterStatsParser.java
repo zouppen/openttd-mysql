@@ -80,9 +80,9 @@ public class QuarterStatsParser implements LineParser {
 	sql.appendRaw("(@cur_game,");
 	sql.appendNumber(company_id);
 	sql.appendRaw(',');
-	sql.appendString(colour);
-	sql.appendRaw(',');
 	sql.appendString(name);
+	sql.appendRaw(',');
+	sql.appendString(colour);
 	sql.appendRaw(',');
 	sql.appendNumber(founded);
 	sql.appendRaw(");");

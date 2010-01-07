@@ -68,7 +68,7 @@ public class LogReader {
     public Statement newConnection() throws SQLException {
 	Connection conn = DriverManager.getConnection(db_url,db_config);
 	Statement stmt = conn.createStatement();
-	stmt.executeUpdate(sqlInitQuery); // set some defaults
+	stmt.execute(sqlInitQuery); // set some defaults
 	return stmt;
     }
     
@@ -113,7 +113,7 @@ public class LogReader {
 
 		// Trying to put lines to the database
 		try {
-		    stmt.executeUpdate(sqlLine.toString());
+		    stmt.execute(sqlLine.toString());
 		} catch (SQLException sql_e) {
 		    System.err.println("Database connection has been lost, reconnecting.");
 		    
@@ -134,7 +134,7 @@ public class LogReader {
 		    // Got a new connection
 		    System.err.println("Got a new connection to the database.");
 		    reconnectsLeft = maxReconnects;
-		    stmt.executeUpdate(sqlLine.toString());
+		    stmt.execute(sqlLine.toString());
 		}   
 	    } catch (Exception e) {
 		System.err.println("\nContent: "+line);
