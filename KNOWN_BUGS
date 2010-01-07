@@ -1,6 +1,11 @@
 Known bugs
 ==========
 
+None I'm aware of. :-)
+
+Resolved bugs
+=============
+
 #1: Company parameters
 ----------------------
 
@@ -17,10 +22,10 @@ Steps to reproduce:
 5. Pick a name you had at first
 6. The database is not updated, the last row contains wrong company name
 
-Possible fix:
+Fix:
 
-Replace 'insert ignore' with a procedure which inserts a new line only
+Replaced 'insert ignore' with a procedure which inserts a new line only
 if it is different from the previous one. Values need not to be
 unique.
 
-Status: TODO
+Status: Resolved in the commit after 764315107426c1b72b300ed1db76f0bf93eb0b71.

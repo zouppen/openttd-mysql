@@ -74,12 +74,22 @@ Install and configure mysql if you haven't done so yet. Instruction
 can be found at http://www.mysql.com/ or from the documentation of
 your Linux distribution.
 
-Make a new mysql user or give at least INSERT privilege to that
-database.
+Create a new database. If you want to call the database 'openttd', you
+can setup initial tables simply from 'misc/initial.sql'. On the
+database server, run:
 
-Create a new database. You may call the database 'openttd'. You can
-setup initial tables by executing the SQL commands at
-'misc/initial.sql'.
+$ mysql -u root -p <misc/initial.sql
+
+Then open MySQL console. Make a new user with all the needed privileges.
+Type in the following (remember to change user, host and password):
+
+$ mysql -u root -p
+
+> CREATE USER 'user'@'host' IDENTIFIED BY 'password';
+> GRANT SELECT, INSERT, EXECUTE ON `openttd`.* TO 'user'@'host';
+> FLUSH PRIVILEGES;
+
+Now your database is ready to receive OpenTTD statistics.
 
 mysql-connector-java
 --------------------

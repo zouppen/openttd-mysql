@@ -1,3 +1,7 @@
+CREATE DATABASE openttd;
+
+USE openttd;
+
 CREATE TABLE `chat` (
   `id` int(11) NOT NULL auto_increment,
   `game_id` int(11) default NULL,
@@ -33,7 +37,6 @@ CREATE TABLE `company` (
   `colour` varchar(20) default NULL,
   `founded` smallint(6) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `block` (`company_id`,`name`,`colour`,`founded`),
   KEY `company_id` (`company_id`),
   KEY `game_id` (`game_id`)
 );
@@ -107,7 +110,7 @@ CREATE FUNCTION update_company (`in_game_id` int,
 		       	       `in_name` varchar(40),
 		       	       `in_colour` varchar(20),
 		       	       `in_founded` smallint)
-RETURNS  boolean
+RETURNS boolean
 BEGIN
 	DECLARE last_id int;
 	DECLARE res boolean;
