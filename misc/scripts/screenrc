@@ -1,0 +1,5 @@
+sessionname openttd
+screen openttd -D
+title "OpenTTD"
+screen /home/zouppen/sorsat/openttd-mysql/launch.sh
+title "logger"

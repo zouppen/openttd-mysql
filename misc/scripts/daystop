@@ -1,0 +1,6 @@
+#!/bin/bash
+screen -x openttd -p 0 -X stuff "
+say \"Peli päättyy tältä illalta. Hyvää illanjatkoa, nähdään huomenna klo 18!\"
+pause
+save linkki2-$(date --rfc-3339=date)
+"

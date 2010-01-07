@@ -1,0 +1,5 @@
+#!/bin/bash
+screen -x openttd -p 0 -X stuff '
+say "Hyvää iltaa ja tervetuloa pelaamaan! Hupia riittää seuraavat 3 tuntia."
+unpause
+'

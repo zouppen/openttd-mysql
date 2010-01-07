@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# A script loaded with shit. You should rewrite this if you are a better
+# scripter.
+#
+# Remember to look into screenrc too, there are plenty of variables.
+
+GAMEPREFIX=linkki2-
+
+echo -n "Käynnistetään OpenTTD-palvelin ... "
+
+[[ $(whoami) == "zouppen" ]] || { echo "ei onnistu. Aja käyttäjänä zouppen."; exit 1; }
+
+HOUR=$(date +%H)
+SAVEGAME=$(basename "$(ls ~/.openttd/save/$GAMEPREFIX*|tail -n 1)")
+
+##echo $SAVEGAME && exit 0
+
+cd ~/openttd || exit 1
+
+screen -d -m -L -c screenrc
+
+sleep 5
+
+screen -x openttd -p 0 -X stuff "
+name Pelimaisteri
+load $SAVEGAME
+"
+
+sleep 5
+
+if [[ $HOUR -ge 21 || $HOUR -lt 18 ]]; then	
+	screen -x openttd -p 0 -X stuff '
+pause
+'
+	sleep 2
+	screen -x openttd -p 0 -X stuff '
+pause
+'
+fi
+
+echo ok

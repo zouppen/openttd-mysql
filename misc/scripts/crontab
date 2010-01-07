@@ -1,0 +1,4 @@
+45 17 * * * ~/openttd/put 'say "Peli jatkuu 15 minuutin kuluttua."'
+0  18 * * * ~/openttd/daystart
+45 20 * * * ~/openttd/put 'say "Peliaikaa jäljellä vielä 15 minuuttia."'
+0  21 * * * ~/openttd/daystop
