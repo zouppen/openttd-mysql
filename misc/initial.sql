@@ -1,15 +1,18 @@
 CREATE TABLE `chat` (
-   `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `nick` varchar(20) NOT NULL,
   `msg` text NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY  (`id`),
   KEY `nick` (`nick`),
-  KEY `time` (`time`)
+  KEY `time` (`time`),
+  KEY `game_id` (`game_id`)
 );
 
 CREATE TABLE `action` (
   `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `nick` varchar(20) NOT NULL,
   `action` enum('join','leave') NOT NULL,
@@ -17,23 +20,27 @@ CREATE TABLE `action` (
   PRIMARY KEY  (`id`),
   KEY `nick` (`nick`),
   KEY `time` (`time`),
-  KEY `action` (`action`)
+  KEY `action` (`action`),
+  KEY `game_id` (`game_id`)
 );
 
 CREATE TABLE `company` (
   `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `company_id` int(11) NOT NULL,
   `name` varchar(40) default NULL,
   `colour` varchar(20) default NULL,
   `founded` smallint(6) default NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY  (`id`),
   UNIQUE KEY `block` (`company_id`,`name`,`colour`,`founded`),
-  KEY `company_id` (`company_id`)
+  KEY `company_id` (`company_id`),
+  KEY `game_id` (`game_id`)
 );
 
 CREATE TABLE `company_stats` (
   `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
   `gamedate` date default NULL,
   `company_id` int(11) NOT NULL,
   `money` bigint(20) default NULL,
@@ -49,11 +56,13 @@ CREATE TABLE `company_stats` (
   `tiles` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `company_id` (`company_id`),
-  KEY `gamedate` (`gamedate`)
+  KEY `gamedate` (`gamedate`),
+  KEY `game_id` (`game_id`)
 );
 
 CREATE TABLE `company_annual` (
   `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
   `company_id` int(11) NOT NULL,
   `year` smallint(6) NOT NULL,
   `cost_construction` bigint(20) default NULL,
@@ -71,14 +80,23 @@ CREATE TABLE `company_annual` (
   `other` bigint(20) default NULL,
   PRIMARY KEY  (`id`),
   KEY `company_id` (`company_id`),
-  KEY `year` (`year`)
+  KEY `year` (`year`),
+  KEY `game_id` (`game_id`)
 );
 
 CREATE TABLE `gamedate` (
   `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `ingame` date NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `time` (`time`),
-  KEY `ingame` (`ingame`)
+  KEY `ingame` (`ingame`),
+  KEY `game_id` (`game_id`)
+);
+
+CREATE TABLE `game` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` text,
+  PRIMARY KEY  (`id`)
 );
