@@ -43,8 +43,12 @@ patching you are getting only joins, leaves and private messages to
 the database. Note: You don't need to patch the clients. Players may
 use unpatched OpenTTD.
 
-Get the sources of OpenTTD from http://www.openttd.org/ and patch them
-with http://users.jyu.fi/~jasavilh/openttd/openttd_output.patch.100106 .
+Get the sources of OpenTTD from http://www.openttd.org/ and unpack it
+somewhere. Patch source with misc/openttd_output.patch.100106 by
+running the following command in source directory:
+
+$ patch -p1 <path/to/openttd-mysql/misc/openttd_output.patch.100106
+
 Compile and install as root or as your user with --prefix.
 
 Start OpenTTD as user once to generate initial config:

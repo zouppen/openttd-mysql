@@ -1,0 +1,269 @@
+# OpenTTD patch against version 0.7.5. Written by Jarkko Vilhunen.
+#
+# Unlike the other files in this project, this file is licensed under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your
+# option) any later version. See COPYING of OpenTTD source distribution
+# for more information.
+
+Only in openttd-exp/bin: lang
+Only in openttd-exp/bin: openttd
+Only in openttd-exp/bin: openttdd.grf
+Only in openttd-exp/bin: openttdw.grf
+Only in openttd-exp/bin: sample.cat
+Only in openttd-exp/bin: trg1r.grf
+Only in openttd-exp/bin: trgcr.grf
+Only in openttd-exp/bin: trghr.grf
+Only in openttd-exp/bin: trgir.grf
+Only in openttd-exp/bin: trgtr.grf
+Only in openttd-exp/: config.cache
+Only in openttd-exp/: config.cache.pwd
+Only in openttd-exp/: config.cache.source.list
+Only in openttd-exp/: config.log
+Only in openttd-exp/: config.pwd
+Only in openttd-exp/: Makefile
+Only in openttd-exp/: Makefile.am
+Only in openttd-exp/: Makefile.bundle
+Only in openttd-exp/media: openttd.desktop
+Only in openttd-exp/: objs
+diff -crB openttd-0.7.5/src/company_cmd.cpp openttd-exp/src/company_cmd.cpp
+*** openttd-0.7.5/src/company_cmd.cpp	2009-09-24 19:22:32.000000000 +0000
+--- openttd-exp/src/company_cmd.cpp	2010-01-06 15:01:55.491799894 +0000
+***************
+*** 29,34 ****
+--- 29,35 ----
+  #include "rail.h"
+  #include "sprite.h"
+  #include "oldpool_func.h"
++ #include "console_internal.h" //IConsolePrintF
+  
+  #include "table/strings.h"
+  
+***************
+*** 536,541 ****
+--- 537,590 ----
+  	_cur_company_tick_index = (_cur_company_tick_index + 1) % MAX_COMPANIES;
+  }
+  
++ void ExpensesToConsole()
++ {
++     Company *c;
++ 
++     IConsolePrintF(CC_INFO, "linkki: Tilinpaatokset vuodelle %d", (_cur_year - 1));
++ 
++     FOR_ALL_COMPANIES(c) {
++         char company_name[NETWORK_COMPANY_NAME_LENGTH];
++         SetDParam(0, c->index);
++         GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
++ 
++         char buffer[512];
++ 
++         GetString(buffer, STR_00D1_DARK_BLUE + _company_colours[c->index], lastof(buffer));
++         IConsolePrintF(CC_INFO, "linkki: %d(%s) Company: %s "
++                 " Construction: " OTTD_PRINTF64 " "
++                 " New Vehicles: " OTTD_PRINTF64 " "
++                 " Train running cost: " OTTD_PRINTF64
++                 " Roadveh running cost: " OTTD_PRINTF64
++                 " Aircraft running cost: " OTTD_PRINTF64
++                 " Ship running cost: " OTTD_PRINTF64 
++                 " Property maintainance: " OTTD_PRINTF64
++                 " Train income: " OTTD_PRINTF64
++                 " Roadveh income: " OTTD_PRINTF64
++                 " Aircraft income: " OTTD_PRINTF64
++                 " Ship income: " OTTD_PRINTF64
++                 " Loan interest: " OTTD_PRINTF64
++                 " Other: " OTTD_PRINTF64
++                 ,
++                 c->index + 1, buffer, company_name, 
++                 /* yearly_expenses[3] pitää sisällään kohdassa 0 kuluvan vuoden, 1 edellisen ja 2 toissavuoden */
++                 -(int64)c->yearly_expenses[1][EXPENSES_CONSTRUCTION], 
++                 -(int64)c->yearly_expenses[1][EXPENSES_NEW_VEHICLES], 
++                 -(int64)c->yearly_expenses[1][EXPENSES_TRAIN_RUN], 
++                 -(int64)c->yearly_expenses[1][EXPENSES_ROADVEH_RUN],
++                 -(int64)c->yearly_expenses[1][EXPENSES_AIRCRAFT_RUN],
++                 -(int64)c->yearly_expenses[1][EXPENSES_SHIP_RUN],
++                 -(int64)c->yearly_expenses[1][EXPENSES_PROPERTY],
++                 -(int64)c->yearly_expenses[1][EXPENSES_TRAIN_INC],
++                 -(int64)c->yearly_expenses[1][EXPENSES_ROADVEH_INC],
++                 -(int64)c->yearly_expenses[1][EXPENSES_AIRCRAFT_INC],
++                 -(int64)c->yearly_expenses[1][EXPENSES_SHIP_INC],
++                 -(int64)c->yearly_expenses[1][EXPENSES_LOAN_INT],
++                 -(int64)c->yearly_expenses[1][EXPENSES_OTHER]
++                 );
++     }
++ }
++ 
+  void CompaniesYearlyLoop()
+  {
+  	Company *c;
+***************
+*** 547,552 ****
+--- 596,604 ----
+  		InvalidateWindow(WC_FINANCES, c->index);
+  	}
+  
++     /* Stats output for Linkkipeli */
++     ExpensesToConsole();
++ 
+  	if (_settings_client.gui.show_finances && _local_company != COMPANY_SPECTATOR) {
+  		ShowCompanyFinances(_local_company);
+  		c = GetCompany(_local_company);
+Only in openttd-exp/src: .company_cmd.cpp.swp
+diff -crB openttd-0.7.5/src/console_cmds.cpp openttd-exp/src/console_cmds.cpp
+*** openttd-0.7.5/src/console_cmds.cpp	2009-08-28 17:17:08.000000000 +0000
+--- openttd-exp/src/console_cmds.cpp	2010-01-05 16:19:19.956477718 +0000
+***************
+*** 1446,1451 ****
+--- 1446,1483 ----
+  	return true;
+  }
+  
++ /* more verbose version for statistics output */
++ DEF_CONSOLE_CMD(ConCompaniesExt)
++ {
++     Company *c;
++     if (argc == 0) {
++         IConsoleHelp("Print lots of info about all companies. Usage 'companies_ext'");
++         return true;
++     }
++     NetworkCompanyStats company_stats[MAX_COMPANIES];
++     NetworkPopulateCompanyStats(company_stats);
++     
++     FOR_ALL_COMPANIES(c) {
++         char company_name[NETWORK_COMPANY_NAME_LENGTH];
++         SetDParam(0, c->index);
++         GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
++ 
++         char buffer[512];
++         const NetworkCompanyStats *stats = &company_stats[c->index];
++ 
++         GetString(buffer, STR_00D1_DARK_BLUE + _company_colours[c->index], lastof(buffer));
++         IConsolePrintF(CC_INFO, "linkki: %d(%s) Company: %s inc: " OTTD_PRINTF64 " exp: " OTTD_PRINTF64 " del: " OTTD_PRINTF64 " val: " OTTD_PRINTF64 " perf: %d" , c->index, buffer, company_name, 
++                 (int64)c->old_economy[23].income, 
++                 (int64)c->old_economy[23].expenses, 
++                 (int64)c->old_economy[23].delivered_cargo, 
++                 (int64)c->old_economy[23].company_value,
++                 c->old_economy[23].performance_history
++                 );
++ 
++     }
++     return true;
++ }
++ 
+  DEF_CONSOLE_CMD(ConSayCompany)
+  {
+  	if (argc == 0) {
+***************
+*** 1789,1794 ****
+--- 1821,1829 ----
+  	IConsoleCmdHookAdd("say",              ICONSOLE_HOOK_ACCESS, ConHookNeedNetwork);
+  	IConsoleCmdRegister("companies",       ConCompanies);
+  	IConsoleCmdHookAdd("companies",        ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
++     /* our extended output hooks for linkkipeli */
++     IConsoleCmdRegister("companies_ext",   ConCompaniesExt);
++     IConsoleCmdHookAdd("companies_ext",    ICONSOLE_HOOK_ACCESS, ConHookServerOnly);
+  	IConsoleAliasRegister("players",       "companies");
+  	IConsoleCmdRegister("say_company",     ConSayCompany);
+  	IConsoleCmdHookAdd("say_company",      ICONSOLE_HOOK_ACCESS, ConHookNeedNetwork);
+diff -crB openttd-0.7.5/src/economy.cpp openttd-exp/src/economy.cpp
+*** openttd-0.7.5/src/economy.cpp	2009-09-18 07:00:35.000000000 +0000
+--- openttd-exp/src/economy.cpp	2010-01-06 15:04:29.777024046 +0000
+***************
+*** 38,43 ****
+--- 38,44 ----
+  #include "table/strings.h"
+  #include "table/sprites.h"
+  
++ #include "console_internal.h" //IConsolePrintF
+  
+  /* Initialize the cargo payment-pool */
+  DEFINE_OLD_POOL_GENERIC(CargoPayment, CargoPayment)
+***************
+*** 547,552 ****
+--- 548,615 ----
+  	}
+  }
+  
++ void QuarterlyStatsToConsole()
++ {
++         Company *c;
++         
++         uint tile_counts[MAX_COMPANIES];
++         memset(tile_counts, 0, sizeof(tile_counts));
++ 
++         NetworkCompanyStats company_stats[MAX_COMPANIES];
++         NetworkPopulateCompanyStats(company_stats);
++         
++         for (uint x = 1; x < MapMaxX(); x++) {
++             for (uint y = 1; y < MapMaxY(); y++) {
++                 Owner owner = GetTileOwner(TileXY(x, y));
++                 if (IsValidCompanyID(owner) && IsHumanCompany(owner)) {
++                     tile_counts[GetCompany(owner)->index]++;                
++                     
++                 } else {
++                     /* ruudussa vapaata, kaupunki, jotain muuta? */
++                 }
++             }
++         }
++ 
++         IConsolePrintF(CC_INFO, "linkki: Neljannesvuositilastot %d / %d", (_cur_month == 0) ? _cur_year + 1 : _cur_year /*näytä nollakuukausi alkavalle vuodelle päättyvän sijaan*/, _cur_month);
++ 
++         FOR_ALL_COMPANIES(c) {
++             /* Grab the company name */
++             char company_name[NETWORK_COMPANY_NAME_LENGTH];
++             SetDParam(0, c->index);
++             GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
++ 
++             char buffer[512];
++        		const NetworkCompanyStats *stats = &company_stats[c->index];
++ 
++             GetString(buffer, STR_00D1_DARK_BLUE + _company_colours[c->index], lastof(buffer));
++             IConsolePrintF(CC_INFO, "linkki: %d(%s) Company: %s "
++                     "Year Founded: %d "
++                     "Money: " OTTD_PRINTF64 
++                     " Loan: " OTTD_PRINTF64 
++                     " Value: " OTTD_PRINTF64 
++                     " (T:%d, R:%d, P:%d, S:%d) "
++                     " Income: " OTTD_PRINTF64
++                     " Expenses: " OTTD_PRINTF64
++                     " Delivered cargo: " OTTD_PRINTF64
++                     " Tiles owned: %d "
++                     /*" Company value: " OTTD_PRINTF64
++                     " Performance: %d"*/,
++                 c->index + 1, buffer, company_name, c->inaugurated_year, (int64)c->money, (int64)c->current_loan, (int64)CalculateCompanyValue(c),
++                 /* trains      */ stats->num_vehicle[0],
++                 /* lorry + bus */ stats->num_vehicle[1] + stats->num_vehicle[2],
++                 /* planes      */ stats->num_vehicle[3],
++                 /* ships       */ stats->num_vehicle[4],
++                 (int64)c->cur_economy.income, 
++                 (int64)c->cur_economy.expenses, 
++                 (int64)c->cur_economy.delivered_cargo,
++                 tile_counts[c->index] /*, 
++                 (int64)c->cur_economy.company_value, //peli päivittää vasta myöhemmin nämä
++                 c->cur_economy.performance_history*/
++                 );
++         }
++ }
++ 
++ 
+  static void CompaniesGenStatistics()
+  {
+  	Station *st;
+***************
+*** 561,567 ****
+--- 624,634 ----
+  	if (!HasBit(1 << 0 | 1 << 3 | 1 << 6 | 1 << 9, _cur_month))
+  		return;
+  
++     /* Stats output for Linkkipeli */
++     QuarterlyStatsToConsole();
++ 
+  	FOR_ALL_COMPANIES(c) {
++ 
+  		memmove(&c->old_economy[1], &c->old_economy[0], sizeof(c->old_economy) - sizeof(c->old_economy[0]));
+  		c->old_economy[0] = c->cur_economy;
+  		memset(&c->cur_economy, 0, sizeof(c->cur_economy));
+Only in openttd-exp/src: .economy.cpp.swp
+Only in openttd-exp/src: .rail_gui.cpp.swp
+Only in openttd-exp/src: rev.cpp
+Only in openttd-exp/src: .unmovable_cmd.cpp.swp
