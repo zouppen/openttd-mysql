@@ -100,3 +100,29 @@ CREATE TABLE `game` (
   `name` text,
   PRIMARY KEY  (`id`)
 );
+
+DELIMITER |
+CREATE FUNCTION update_company (`in_game_id` int,
+       		       	       `in_company_id` int,
+		       	       `in_name` varchar(40),
+		       	       `in_colour` varchar(20),
+		       	       `in_founded` smallint)
+RETURNS  boolean
+BEGIN
+	DECLARE last_id int;
+	DECLARE res boolean;
+	SELECT id INTO last_id
+  	       FROM company
+  	       WHERE game_id=in_game_id AND company_id=in_company_id
+	       ORDER BY id DESC
+	       LIMIT 1;
+	SELECT in_name=name AND  in_colour=colour AND in_founded=founded
+	       INTO res
+	       FROM company
+	       WHERE id=last_id;		
+	IF res THEN RETURN FALSE; END IF;
+	INSERT company (game_id,company_id,name,colour,founded)
+	       VALUES(in_game_id,in_company_id,in_name,in_colour,in_founded);
+	RETURN TRUE;
+END|
+DELIMITER ;
