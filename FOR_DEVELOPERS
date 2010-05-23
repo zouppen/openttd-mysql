@@ -1,0 +1,39 @@
+Information for developers
+==========================
+
+Needles
+-------
+
+If you are handling huge data masses with this thing you may be
+interested how to filter only "meaningful" amount of rows. For example
+in OpenTTData Stats written by Katajakasa there are graphs which take
+a huge amount of data from the database. That can be avoided with
+needles.
+
+Think of needles as those in a haystack. You want to get only some of
+the data, ignoring the rest. Picking by needles is not super accurate,
+filtering usually returns more data than requested. But the amount of
+data is never 2 times more than requested.
+
+First, you need to know how much data you need. For example, if you
+are plotting 100 pixels wide statistics of companies and time runs
+horizontally, your choice would be 100. If you get more data, at most
+199 data points, that won't be bad. The graphics library will
+interpolate them for you.
+
+So, let's get at least 100 quarter statistics from a game_id 3. You
+can get the optimal needle by quering:
+
+SELECT optimal_limit(COUNT(DISTINCT gamedate),100)
+       FROM company_stats WHERE game_id = 3
+       INTO @needle;
+
+This query returns the needle value. You can use that in your actual
+query:
+
+SELECT * FROM company_stats WHERE game_id = 3 AND needle >= @needle;
+
+In my case, that returns rows from 152 distinct quarters. Because
+100<152<200, the query seems to work!
+
+Have fun with query optimization!

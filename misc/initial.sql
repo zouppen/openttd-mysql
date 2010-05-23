@@ -57,11 +57,13 @@ CREATE TABLE `company_stats` (
   `expenses` bigint(20) default NULL,
   `cargo` int(11) default NULL,
   `tiles` int(11) default NULL,
+  `needle` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `company_id` (`company_id`),
   KEY `gamedate` (`gamedate`),
-  KEY `game_id` (`game_id`)
-);
+  KEY `game_id` (`game_id`),
+  KEY `needle` (`needle`)
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `company_annual` (
   `id` int(11) NOT NULL auto_increment,
@@ -81,11 +83,13 @@ CREATE TABLE `company_annual` (
   `income_ship` bigint(20) default NULL,
   `loan_interest` bigint(20) default NULL,
   `other` bigint(20) default NULL,
+  `needle` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `company_id` (`company_id`),
   KEY `year` (`year`),
-  KEY `game_id` (`game_id`)
-);
+  KEY `game_id` (`game_id`),
+  KEY `needle` (`needle`)
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `gamedate` (
   `id` int(11) NOT NULL auto_increment,
@@ -127,5 +131,51 @@ BEGIN
 	INSERT company (game_id,company_id,name,colour,founded)
 	       VALUES(in_game_id,in_company_id,in_name,in_colour,in_founded);
 	RETURN TRUE;
+END|
+DELIMITER ;
+
+DELIMITER |
+-- Returns the "importance" of an integer. It counts successive LSB
+-- zero-bits. Used in triggers and it helps picking just a fraction of
+-- all data .
+CREATE FUNCTION msb_zeros (`n` int)
+RETURNS int
+BEGIN
+	DECLARE res INT DEFAULT 0;
+	WHILE (n & 1 = 0 AND res < 32) DO
+	      SET n = n >> 1;
+	      SET res = res + 1;
+	END WHILE;
+	RETURN res;
+END|
+DELIMITER ;
+
+-- Calculates the optimal needle value. You need to know the number of
+-- samples and the minimum number of samples you need. You can use
+-- this function inside an SQL query. See README for examples.
+CREATE FUNCTION optimal_limit (`n` int, `minimum` int)
+RETURNS int
+RETURN FLOOR(LOG2(n/minimum));
+
+-- Fills needle for company quarter year stats. A needle consists from
+-- quarter number (0-3) and a year.
+CREATE TRIGGER sew_company_stats BEFORE INSERT ON company_stats FOR EACH ROW
+SET NEW.needle=msb_zeros(4*YEAR(NEW.gamedate)+(MONTH(NEW.gamedate)-1)/3);
+
+-- Fills needle for company annual stats.
+CREATE TRIGGER sew_company_annual BEFORE INSERT ON company_annual FOR EACH ROW
+SET NEW.needle=msb_zeros(NEW.year);
+
+DELIMITER |
+-- Fills needle values. Used to fill needles to old data. Not used in
+-- the code, used only for converting from legacy format.
+CREATE PROCEDURE fill_needles ()
+BEGIN
+	UPDATE company_stats
+	       SET needle=msb_zeros(4*YEAR(gamedate)+(MONTH(gamedate)-1)/3)
+	       WHERE needle IS NULL;
+	UPDATE company_annual
+	       SET needle=msb_zeros(year) 
+	       WHERE needle IS NULL;
 END|
 DELIMITER ;
