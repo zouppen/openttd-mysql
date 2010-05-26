@@ -28,6 +28,20 @@ CREATE TABLE `action` (
   KEY `game_id` (`game_id`)
 );
 
+CREATE TABLE `nature_stats` (
+  `id` int(11) NOT NULL auto_increment,
+  `game_id` int(11) default NULL,
+  `gamedate` date default NULL,
+  `water` int(11) default NULL,
+  `city_tiles` int(11) default NULL,
+  `trees` int(11) default NULL,
+  `needle` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `gamedate` (`gamedate`),
+  KEY `game_id` (`game_id`),
+  KEY `needle` (`needle`)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE `company` (
   `id` int(11) NOT NULL auto_increment,
   `game_id` int(11) default NULL,
@@ -39,7 +53,7 @@ CREATE TABLE `company` (
   PRIMARY KEY  (`id`),
   KEY `company_id` (`company_id`),
   KEY `game_id` (`game_id`)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `company_stats` (
   `id` int(11) NOT NULL auto_increment,
@@ -166,9 +180,15 @@ SET NEW.needle=msb_zeros(4*YEAR(NEW.gamedate)+(MONTH(NEW.gamedate)-1)/3);
 CREATE TRIGGER sew_company_annual BEFORE INSERT ON company_annual FOR EACH ROW
 SET NEW.needle=msb_zeros(NEW.year);
 
+-- Fills needle for nature stats.
+CREATE TRIGGER sew_nature BEFORE INSERT ON nature_stats FOR EACH ROW
+SET NEW.needle=msb_zeros(4*YEAR(NEW.gamedate)+(MONTH(NEW.gamedate)-1)/3);
+
 DELIMITER |
 -- Fills needle values. Used to fill needles to old data. Not used in
--- the code, used only for converting from legacy format.
+-- the code, used only for converting from legacy format. NOTE:
+-- There's only company_stats and company_annual needles because
+-- needles were implemented when there was not nature etc.
 CREATE PROCEDURE fill_needles ()
 BEGIN
 	UPDATE company_stats
