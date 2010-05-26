@@ -12,6 +12,8 @@ import java.sql.SQLException;
  */
 public class LogReader {
 
+    private static final String stampRegEx = "^\\[(.{19})\\] (.*)";
+    private static final Pattern stampPattern;
     private String db_url;
     private Properties db_config = new Properties();
     private static ArrayList<LineParser> lineParsers =
@@ -20,6 +22,9 @@ public class LogReader {
     private String sqlInitQuery;
     
     static {
+	// Some regexs
+        stampPattern = Pattern.compile(stampRegEx);
+
 	// Some stateful parsers for statistics headings
 	AnnualHeadingParser annualHeading = new AnnualHeadingParser();
 	QuarterHeadingParser quarterHeading = new QuarterHeadingParser();
@@ -33,6 +38,7 @@ public class LogReader {
 	lineParsers.add(quarterHeading);
 	lineParsers.add(new AnnualStatsParser(annualHeading));
 	lineParsers.add(new QuarterStatsParser(quarterHeading));
+	lineParsers.add(new NatureStatsParser(quarterHeading));
     }
     
     /**
@@ -89,8 +95,18 @@ public class LogReader {
 	// Neverending loop. Waiting new lines forever.
 	while (true) {
 	    try {
-		line = scanner.nextLine();
+		String rawLine = scanner.nextLine();
 		
+		// Extract timestamp for further processing
+		// (skipped at the moment)
+		Matcher matcher = stampPattern.matcher(rawLine);
+		if (!matcher.matches()) {
+		    System.err.println("FATAL: Not a valid timestamp");
+		    continue;
+		}
+		// TODO: Do something with the timestamp
+		line = matcher.group(2);
+
 		LineParser thisParser = null;
 
 		// Looking for a good parser
